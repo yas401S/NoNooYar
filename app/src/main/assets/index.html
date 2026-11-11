@@ -97,9 +97,10 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <div class="actions"><button onclick="setBrush(6)">نازک</button><button class="primary" onclick="setBrush(13)">متوسط</button><button onclick="setBrush(23)">ضخیم</button><button onclick="setEraser()">پاک‌کن 🧽</button></div>
 <div class="paint-label">✨ مهرهای بامزه (انتخاب کن و روی صفحه بزن)</div>
 <div class="actions"><button onclick="chooseStamp('⭐')">⭐</button><button onclick="chooseStamp('❤️')">❤️</button><button onclick="chooseStamp('🌸')">🌸</button><button onclick="chooseStamp('🌈')">🌈</button><button onclick="chooseStamp('🦋')">🦋</button><button onclick="chooseStamp('🐱')">🐱</button><button onclick="chooseStamp('☀️')">☀️</button><button onclick="chooseStamp(null)">قلم معمولی</button></div>
-<div class="paint-label">🏡 الگوی نقاشی برای تمرین</div>
-<div class="actions"><button onclick="drawTemplate('house')">خانه 🏠</button><button onclick="drawTemplate('sun')">خورشید ☀️</button><button onclick="drawTemplate('flower')">گل 🌷</button><button onclick="drawTemplate('fish')">ماهی 🐟</button></div>
+<div class="paint-label">🧩 چی بکشیم؟ یک الگو انتخاب کن</div>
+<div class="actions"><button onclick="drawTemplate('house')">خانه 🏠</button><button onclick="drawTemplate('sun')">خورشید ☀️</button><button onclick="drawTemplate('flower')">گل 🌷</button><button onclick="drawTemplate('fish')">ماهی 🐟</button><button onclick="drawTemplate('tree')">درخت 🌳</button><button onclick="drawTemplate('butterfly')">پروانه 🦋</button><button onclick="drawTemplate('car')">ماشین 🚗</button><button onclick="drawTemplate('apple')">سیب 🍎</button></div>
 </div>
+<div class="paint-poem" id="paintPoem"><div class="paint-poem-title" id="paintPoemTitle">🎵 شعر نقاشی</div><div id="paintPoemText">یکی از الگوها را انتخاب کن تا شعر قشنگش را با هم بخوانیم!</div><div class="actions"><button class="primary" onclick="readPaintPoem()">🔊 دوباره شعر را بخوان</button><button onclick="stopPaintPoem()">⏹️ توقف</button></div></div>
 <canvas id="paint" width="800" height="480" aria-label="صفحه نقاشی کودک"></canvas>
 <div class="actions"><button onclick="undoPaint()">↩️ برگشت</button><button onclick="clearPaint()">🧹 پاک کردن همه</button><button class="primary" onclick="savePaint()">💾 ذخیره نقاشی</button><button onclick="loadPaint()">📂 نقاشی قبلی</button></div>
 <div class="feedback" id="paintFeedback">آماده‌ای هنرمند کوچولو؟ 💛</div>
@@ -268,12 +269,30 @@ function clearPaint(){rememberPaint();ctx.clearRect(0,0,canvas.width,canvas.heig
 function undoPaint(){if(!paintUndo.length){$('paintFeedback').textContent='هنوز کاری برای برگشتن نیست';return}const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height)};img.src=paintUndo.pop();$('paintFeedback').textContent='آخرین حرکت برگشت داده شد ↩️'}
 function savePaint(){try{localStorage.setItem('noonoo-last-drawing',canvas.toDataURL('image/png'));$('paintFeedback').textContent='نقاشی قشنگت روی همین گوشی ذخیره شد! ⭐';reward()}catch(e){$('paintFeedback').textContent='ذخیره نشد؛ کمی از نقاشی را پاک کن و دوباره امتحان کن.'}}
 function loadPaint(){const data=localStorage.getItem('noonoo-last-drawing');if(!data){$('paintFeedback').textContent='هنوز نقاشی ذخیره‌شده‌ای نداری';return}rememberPaint();const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);$('paintFeedback').textContent='نقاشی قبلی برگشت! 🎨'};img.src=data}
+const drawingPoems={
+house:{title:'🏠 شعر خانه',text:'خانه‌ی ما قشنگه،\nپر از مهر و رنگه\nدر و پنجره داره،\nخنده توش می‌باره!'},
+sun:{title:'☀️ شعر خورشید',text:'خورشید خانوم بیدار شد،\nاز پشت کوه‌ها پیدا شد\nپرتو زردش رو کشید،\nبه باغچه خنده بخشید!'},
+flower:{title:'🌷 شعر گل',text:'گل کوچولو ناز و قشنگ،\nلبخند زده بهارِ رنگ‌رنگ\nآبش بده تا وا بشه،\nپر از عطر و زیبا بشه!'},
+fish:{title:'🐟 شعر ماهی',text:'ماهی کوچولو توی آب،\nمی‌چرخه آروم و بی‌تاب\nدُم می‌زنه چپ و راست،\nدوست خوب دریاست!'},
+tree:{title:'🌳 شعر درخت',text:'درخت سبز و مهربون،\nسایه می‌ده توی خیابون\nبرگاش می‌رقصن با باد،\nبه زمین می‌دهی تو شادی و داد!'},
+butterfly:{title:'🦋 شعر پروانه',text:'پروانه‌ی رنگارنگ،\nمی‌رقصه توی باغ قشنگ\nروی گل‌ها می‌شینه،\nعطر بهارو می‌چینه!'},
+car:{title:'🚗 شعر ماشین',text:'ماشین کوچولو راه می‌ره،\nتو خیابون آروم می‌ره\nچراغ قرمز وایمیسته،\nسبز که شد راه می‌بنده!'},
+apple:{title:'🍎 شعر سیب',text:'سیب سرخ و خندون،\nافتاده توی باغستون\nبشورش و نوش جون،\nمیوه‌ی خوب و مهربون!'}
+};
+let currentPaintPoem='';
+function readPaintPoem(){if(currentPaintPoem)speak(currentPaintPoem);else speak('اول یک الگوی نقاشی انتخاب کن')}
+function stopPaintPoem(){if('speechSynthesis'in window)speechSynthesis.cancel()}
+function showPaintPoem(type){const p=drawingPoems[type];if(!p)return;currentPaintPoem=p.text;$('paintPoemTitle').textContent=p.title;$('paintPoemText').textContent=p.text;speak(p.text)}
 function drawTemplate(type){rememberPaint();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.strokeStyle='#b8b8c9';ctx.lineWidth=7;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([10,9]);ctx.beginPath();
 if(type==='house'){ctx.moveTo(230,230);ctx.lineTo(400,90);ctx.lineTo(570,230);ctx.lineTo(230,230);ctx.moveTo(270,230);ctx.lineTo(270,400);ctx.lineTo(530,400);ctx.lineTo(530,230);ctx.moveTo(370,400);ctx.lineTo(370,300);ctx.lineTo(430,300);ctx.lineTo(430,400);ctx.moveTo(300,270);ctx.lineTo(350,270);ctx.lineTo(350,320);ctx.lineTo(300,320);ctx.closePath()}
 if(type==='sun'){ctx.arc(400,240,105,0,Math.PI*2);for(let a=0;a<Math.PI*2;a+=Math.PI/4){ctx.moveTo(400+125*Math.cos(a),240+125*Math.sin(a));ctx.lineTo(400+175*Math.cos(a),240+175*Math.sin(a))}}
 if(type==='flower'){ctx.arc(400,170,48,0,Math.PI*2);for(let a=0;a<Math.PI*2;a+=Math.PI/3){ctx.moveTo(400+48*Math.cos(a),170+48*Math.sin(a));ctx.arc(400+85*Math.cos(a),170+85*Math.sin(a),38,0,Math.PI*2)}ctx.moveTo(400,220);ctx.lineTo(400,420);ctx.moveTo(400,330);ctx.quadraticCurveTo(300,260,290,350);ctx.quadraticCurveTo(350,370,400,330)}
 if(type==='fish'){ctx.ellipse(390,240,125,75,0,0,Math.PI*2);ctx.moveTo(515,240);ctx.lineTo(630,160);ctx.lineTo(630,320);ctx.closePath();ctx.moveTo(310,220);ctx.arc(310,220,9,0,Math.PI*2)}
-ctx.stroke();ctx.restore();$('paintFeedback').textContent='حالا الگو را با رنگ‌های دلخواهت کامل کن! 🌟'}
+if(type==='tree'){ctx.moveTo(400,120);ctx.lineTo(400,390);ctx.moveTo(400,180);ctx.lineTo(300,280);ctx.moveTo(400,230);ctx.lineTo(500,310);ctx.arc(400,150,95,0,Math.PI*2)}
+if(type==='butterfly'){ctx.moveTo(400,160);ctx.lineTo(400,340);ctx.ellipse(320,210,85,65,-.5,0,Math.PI*2);ctx.ellipse(480,210,85,65,.5,0,Math.PI*2);ctx.ellipse(330,310,60,42,.5,0,Math.PI*2);ctx.ellipse(470,310,60,42,-.5,0,Math.PI*2);ctx.moveTo(400,160);ctx.quadraticCurveTo(360,90,340,100);ctx.moveTo(400,160);ctx.quadraticCurveTo(440,90,460,100)}
+if(type==='car'){ctx.moveTo(210,300);ctx.lineTo(270,210);ctx.lineTo(510,210);ctx.lineTo(590,300);ctx.lineTo(620,300);ctx.lineTo(620,370);ctx.lineTo(190,370);ctx.lineTo(190,300);ctx.closePath();ctx.moveTo(300,210);ctx.lineTo(330,150);ctx.lineTo(470,150);ctx.lineTo(510,210);ctx.arc(280,370,38,0,Math.PI*2);ctx.moveTo(580,370);ctx.arc(540,370,38,0,Math.PI*2)}
+if(type==='apple'){ctx.moveTo(400,170);ctx.bezierCurveTo(270,100,230,230,300,350);ctx.bezierCurveTo(350,440,390,390,400,390);ctx.bezierCurveTo(440,390,480,440,530,350);ctx.bezierCurveTo(600,230,530,100,400,170);ctx.moveTo(400,170);ctx.lineTo(420,100);ctx.moveTo(420,130);ctx.quadraticCurveTo(480,70,510,130)}
+ctx.stroke();ctx.restore();$('paintFeedback').textContent='حالا الگو را با رنگ‌های دلخواهت کامل کن! 🌟';showPaintPoem(type)}
 
 updateScore();showLetter();
 </script></body></html>
