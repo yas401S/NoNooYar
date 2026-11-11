@@ -177,7 +177,23 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <div class="actions"><button class="back" onclick="goHome()">🏠 خانه</button></div>
 </main><footer>برای بازی و یادگیری کودک ۴ ساله • نسخه آفلاین 🌼</footer>
 <script>
-const $=id=>document.getElementById(id);let score=Number(localStorage.getItem('noonoo-stars')||0);
+const $=id=>document.getElementById(id);
+// Offline Android TTS bridge: prefers installed voices that do not require network.
+(function(){
+ if(!window.AndroidSpeech)return;
+ class LocalUtterance{constructor(text){this.text=String(text||'');this.lang='fa-IR';this.rate=1;this.pitch=1;}}
+ window.SpeechSynthesisUtterance=LocalUtterance;
+ window.speechSynthesis={
+  cancel(){try{AndroidSpeech.stop()}catch(e){}},
+  speak(u){try{AndroidSpeech.speak(String(u.text||''),String(u.lang||'fa-IR'),Number(u.rate||1),Number(u.pitch||1))}catch(e){window.onNativeTtsStatus&&window.onNativeTtsStatus('صدای آفلاین در دسترس نیست.')} }
+ };
+ window.onNativeTtsStatus=function(message){
+  let el=document.getElementById('offlineVoiceStatus');
+  if(!el){el=document.createElement('div');el.id='offlineVoiceStatus';el.style.cssText='position:fixed;bottom:12px;left:12px;right:12px;z-index:9999;background:#fff8d9;border:2px solid #ffd45c;border-radius:16px;padding:10px;text-align:center;font: bold 13px Tahoma;box-shadow:0 3px 12px #0002';document.body.appendChild(el)}
+  el.textContent=message;el.style.display='block';clearTimeout(window._voiceStatusTimer);window._voiceStatusTimer=setTimeout(()=>el.style.display='none',4500);
+ };
+})();
+let score=Number(localStorage.getItem('noonoo-stars')||0);
 function updateScore(){$('score').textContent=score;localStorage.setItem('noonoo-stars',score)}
 function reward(){score++;updateScore();speak('آفرین! عالی بود')}
 function speak(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='fa-IR';u.rate=.82;speechSynthesis.speak(u)}
