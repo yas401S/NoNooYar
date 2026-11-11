@@ -8,6 +8,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Download offline animal sounds
+        run: |
+          mkdir -p app/src/main/assets/sounds
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Perro_ladrando.ogg' -o app/src/main/assets/sounds/dog.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Mudchute_cow_1.ogg' -o app/src/main/assets/sounds/cow.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Sheep_bleating.ogg' -o app/src/main/assets/sounds/sheep.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Frogs_croak_calling_chorus_at_night.ogg' -o app/src/main/assets/sounds/frog.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Bee_buzzing_sound_%28animal_noises%29.opus' -o app/src/main/assets/sounds/bee.opus
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Wiehern.ogg' -o app/src/main/assets/sounds/horse.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Medium_rooster_crowing.ogg' -o app/src/main/assets/sounds/rooster.ogg
+          curl -L --retry 3 --fail --silent --show-error 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Icterus_graceannae_-_White_edge_Oriole.wav' -o app/src/main/assets/sounds/bird.wav
+          test -s app/src/main/assets/sounds/dog.ogg
+          test -s app/src/main/assets/sounds/cow.ogg
+          test -s app/src/main/assets/sounds/sheep.ogg
+          test -s app/src/main/assets/sounds/frog.ogg
+          test -s app/src/main/assets/sounds/bee.opus
+          test -s app/src/main/assets/sounds/horse.ogg
+          test -s app/src/main/assets/sounds/rooster.ogg
+          test -s app/src/main/assets/sounds/bird.wav
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
