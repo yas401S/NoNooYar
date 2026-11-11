@@ -81,7 +81,18 @@ const colors=[['قرمز','🔴'],['آبی','🔵'],['زرد','🟡'],['سبز',
 const animals=[['🐱','گربه'],['🐶','سگ'],['🐮','گاو'],['🐑','گوسفند'],['🦁','شیر'],['🐘','فیل'],['🐰','خرگوش'],['🐸','قورباغه'],['🐔','مرغ'],['🦆','اردک']];let ai=0;function nextAnimal(){ai=(ai+1)%animals.length;$('animalEmoji').textContent=animals[ai][0];$('animalName').textContent=animals[ai][1];speak(animals[ai][1])}
 let deck=[],opened=[],matched=0;function startMemory(){deck=['🐶','🐱','🐸','🦁','🐶','🐱','🐸','🦁'].sort(()=>Math.random()-.5);opened=[];matched=0;$('memoryFeedback').textContent='';$('memoryGrid').innerHTML='';deck.forEach((v,i)=>{let b=document.createElement('button');b.className='tile';b.style.minHeight='75px';b.textContent='❔';b.onclick=()=>flip(b,v,i);$('memoryGrid').append(b)})}
 function flip(b,v,i){if(opened.length===2||b.dataset.done||opened.some(x=>x.i===i))return;b.textContent=v;opened.push({b,v,i});if(opened.length===2){if(opened[0].v===opened[1].v){opened.forEach(x=>x.b.dataset.done='1');matched++;opened=[];if(matched===4){$('memoryFeedback').textContent='همه جفت‌ها را پیدا کردی!';reward()}}else{let pair=opened;opened=[];setTimeout(()=>pair.forEach(x=>x.b.textContent='❔'),650)}}}
-const poems=[{pic:'🌞',text:'خورشید خانوم بیدار شد\nخندید و باز بهار شد\nگنجشک اومد روی درخت\nخوند یه آواز قشنگ و سخت!'}, {pic:'🐱',text:'پیشی کوچولوی ناز\nمی‌پره این‌ور، می‌ره باز\nنرم و آروم راه می‌ره\nبا توپ کوچولو بازی می‌کنه'}, {pic:'🌧️',text:'بارون بارونه، دونه‌دونه\nگل توی باغچه می‌خونه\nرنگین‌کمون پیدا شده\nآسمون چه زیبا شده!'}, {pic:'⭐',text:'یه ستاره توی آسمون\nچشمک می‌زنه مهربون\nماه می‌گه شب بخیر\nخوابای خوب ببین عزیزم'}];let pi=0;function showPoem(){$('poemPic').textContent=poems[pi].pic;$('poemText').textContent=poems[pi].text;$('poemPage').textContent='شعر '+(pi+1)+' از '+poems.length}function nextPoem(){pi=(pi+1)%poems.length;showPoem()}function prevPoem(){pi=(pi+poems.length-1)%poems.length;showPoem()}function readPoem(){speak(poems[pi].text.replace(/\n/g,'، '))}
+const poems=[
+{pic:'🔢',text:'یک و دو و سه، بشمار\nچهار و پنج، دست بزن یار\nشش و هفت و هشت و نه\nده تا ستاره، آفرین به تو!'},
+{pic:'🎨',text:'قرمز مثل سیب قشنگ\nآبی مثل آسمونِ رنگ‌رنگ\nزرد مثل خورشید تابان\nسبز مثل برگ درختان'},
+{pic:'🔺',text:'دایره گرد و نازه\nمربع چهار تا گوشه داره\nمثلث سه گوشه داره\nشکل‌ها چه جالبن، آره!'},
+{pic:'🧼',text:'دستامو می‌شورم، تمیز و پاک\nبا آب و صابون، چه کارِ باحال\nقبل غذا، بعد از بازی\nتمیزی میاره شادی'},
+{pic:'🪥',text:'مسواک من دوست منه\nدندونامو تمیز می‌کنه\nصبح و شب آروم‌آروم\nلبخند من می‌شه گلگون'},
+{pic:'🤝',text:'اسباب‌بازی‌مو می‌دم به دوست\nبازی با هم چه خوبه، چه دوست!\nنوبت همو رعایت کنیم\nبا مهربونی شادی کنیم'},
+{pic:'🔤',text:'آ مثل آسمون آبی\nب مثل بابای مهربون\nپ مثل پروانه‌ی رنگی\nحرف‌ها رو یاد می‌گیریم آسون'},
+{pic:'🐝',text:'زنبور کوچولو وزوز می‌کنه\nروی گل‌ها پرواز می‌کنه\nبه گل‌ها دست نمی‌زنیم\nاز باغ قشنگ نگهداری می‌کنیم'},
+{pic:'🚦',text:'چراغ قرمز، وایسا جانم\nچراغ سبز، راه برو آروم\nبا بزرگ‌تر از خیابون رد شو\nایمن و خوشحال، قدم بردار'},
+{pic:'🌱',text:'دونه رو می‌کارم توی خاک\nآب می‌دم هر روز، پاک‌پاک\nخورشید می‌تابه، سبز می‌شه\nیه گل قشنگ پیدا می‌شه'}
+];let pi=0;function showPoem(){$('poemPic').textContent=poems[pi].pic;$('poemText').textContent=poems[pi].text;$('poemPage').textContent='شعر '+(pi+1)+' از '+poems.length}function nextPoem(){pi=(pi+1)%poems.length;showPoem()}function prevPoem(){pi=(pi+poems.length-1)%poems.length;showPoem()}function readPoem(){speak(poems[pi].text.replace(/\n/g,'، '))}
 const stories=[
 {title:'خرگوش کوچولو و هویج',pages:[
 {pic:'🐰',friend:'🥕',text:'یکی بود، یکی نبود. هپی خرگوش کوچولو توی جنگل سبز زندگی می‌کرد. یک روز بوی هویج خوشمزه‌ای شنید!',voice:'یکی بود یکی نبود. هپی خرگوش کوچولو توی جنگل زندگی می‌کرد. یک روز بوی هویج خوشمزه‌ای شنید.'},
