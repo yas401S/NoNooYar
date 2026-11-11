@@ -8,8 +8,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.view.ViewGroup
+import android.widget.TextView
 import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
 import java.util.Locale
 import java.util.UUID
 
@@ -21,8 +21,10 @@ class MainActivity : Activity() {
 
     private fun report(message: String) {
         runOnUiThread {
-            web?.evaluateJavascript("window.onNativeTtsStatus && window.onNativeTtsStatus(" +
-                org.json.JSONObject.quote(message) + ")", null)
+            try {
+                web?.evaluateJavascript("window.onNativeTtsStatus && window.onNativeTtsStatus(" +
+                    org.json.JSONObject.quote(message) + ")", null)
+            } catch (_: Exception) { }
         }
     }
 
@@ -30,76 +32,89 @@ class MainActivity : Activity() {
         @JavascriptInterface
         fun speak(text: String, language: String, rate: Float, pitch: Float) {
             runOnUiThread {
-                val engine = tts
-                if (!ttsReady || engine == null) {
-                    report("موتور صدای گوشی هنوز آماده نیست؛ کمی بعد دوباره امتحان کن.")
-                    return@runOnUiThread
+                try {
+                    val engine = tts
+                    if (!ttsReady || engine == null) {
+                        report("موتور صدای گوشی هنوز آماده نیست؛ کمی بعد دوباره امتحان کن.")
+                        return@runOnUiThread
+                    }
+                    val lang = if (language.startsWith("en")) Locale.US else Locale.forLanguageTag("fa-IR")
+                    val voice = offlineVoices.firstOrNull { it.locale.language == lang.language }
+                    if (voice == null) {
+                        report(if (lang.language == "fa") "صدای فارسی آفلاین نصب نیست." else "صدای انگلیسی آفلاین نصب نیست.")
+                        return@runOnUiThread
+                    }
+                    engine.stop()
+                    engine.voice = voice
+                    engine.setSpeechRate(rate.coerceIn(0.5f, 1.5f))
+                    engine.setPitch(pitch.coerceIn(0.5f, 1.5f))
+                    val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, UUID.randomUUID().toString())
+                    if (result == TextToSpeech.ERROR) report("پخش صدا انجام نشد؛ تنظیمات گفتار گوشی را بررسی کن.")
+                } catch (_: Exception) {
+                    report("فعلاً پخش صدا در دسترس نیست؛ می‌توانی از بقیه بخش‌های برنامه استفاده کنی.")
                 }
-                val lang = if (language.startsWith("en")) Locale.US else Locale.forLanguageTag("fa-IR")
-                val voice = offlineVoices.firstOrNull { it.locale.language == lang.language }
-                if (voice == null) {
-                    report(if (lang.language == "fa")
-                        "صدای فارسی آفلاین روی گوشی نصب نیست. از تنظیمات تبدیل متن به گفتار، دادهٔ صوتی فارسی را نصب کن."
-                    else "صدای انگلیسی آفلاین روی گوشی نصب نیست. از تنظیمات تبدیل متن به گفتار، دادهٔ صوتی انگلیسی را نصب کن.")
-                    return@runOnUiThread
-                }
-                engine.stop()
-                engine.voice = voice
-                engine.setSpeechRate(rate.coerceIn(0.5f, 1.5f))
-                engine.setPitch(pitch.coerceIn(0.5f, 1.5f))
-                val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, UUID.randomUUID().toString())
-                if (result == TextToSpeech.ERROR) report("پخش صدای آفلاین انجام نشد؛ موتور گفتار گوشی را بررسی کن.")
             }
         }
-
         @JavascriptInterface
-        fun stop() { runOnUiThread { tts?.stop() } }
+        fun stop() { runOnUiThread { try { tts?.stop() } catch (_: Exception) { } } }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val view = WebView(this)
-        web = view
-        view.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        view.settings.javaScriptEnabled = true
-        view.settings.domStorageEnabled = true
-        view.settings.allowFileAccess = true
-        view.settings.allowContentAccess = false
-        view.settings.blockNetworkLoads = true
-        view.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
-        view.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
-        view.webChromeClient = WebChromeClient()
-        view.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                val scheme = request?.url?.scheme ?: return true
-                return scheme != "file"
+        try {
+            val view = WebView(this)
+            web = view
+            view.layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            view.settings.javaScriptEnabled = true
+            view.settings.domStorageEnabled = true
+            view.settings.allowFileAccess = true
+            view.settings.allowContentAccess = false
+            view.settings.blockNetworkLoads = true
+            view.settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
+            view.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
+            view.webChromeClient = WebChromeClient()
+            view.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    return request?.url?.scheme != "file"
+                }
             }
+            setContentView(view)
+            view.loadUrl("file:///android_asset/index.html")
+            try {
+                tts = TextToSpeech(applicationContext) { status ->
+                    if (status == TextToSpeech.SUCCESS) {
+                        try {
+                            ttsReady = true
+                            offlineVoices = tts?.voices?.filter { !it.isNetworkConnectionRequired }?.toList() ?: emptyList()
+                            report("صدای آفلاین آماده است.")
+                        } catch (_: Exception) { report("برنامه اجراست؛ تنظیمات صدا در دسترس نیست.") }
+                    } else report("برنامه اجراست؛ موتور صدای گوشی آماده نیست.")
+                }
+            } catch (_: Exception) {
+                report("برنامه اجراست؛ موتور صدای گوشی در دسترس نیست.")
+            }
+        } catch (e: Exception) {
+            val fallback = TextView(this)
+            fallback.text = "یاسین‌لند\nبرای اجرا، لطفاً برنامه را دوباره باز کن."
+            fallback.textSize = 22f
+            fallback.gravity = android.view.Gravity.CENTER
+            setContentView(fallback)
         }
-        setContentView(view)
-        tts = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                ttsReady = true
-                offlineVoices = tts?.voices?.filter { !it.isNetworkConnectionRequired }?.toList() ?: emptyList()
-                report("صدای آفلاین آماده است؛ زبان‌های نصب‌شده: " +
-                    offlineVoices.map { it.locale.language }.distinct().joinToString("، "))
-            } else report("موتور تبدیل متن به گفتار گوشی راه‌اندازی نشد.")
-        }
-        view.loadUrl("file:///android_asset/index.html")
     }
 
     override fun onDestroy() {
-        tts?.stop()
-        tts?.shutdown()
+        try { tts?.stop(); tts?.shutdown() } catch (_: Exception) { }
         tts = null
+        web = null
         super.onDestroy()
     }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        val view = (window.decorView as? ViewGroup)?.getChildAt(0) as? WebView
+        val view = web
         if (view?.canGoBack() == true) view.goBack() else super.onBackPressed()
     }
 }
