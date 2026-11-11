@@ -104,7 +104,7 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <button class="paint-swatch" style="background:#222" aria-label="مشکی" onclick="setColor('#222222',this)"></button>
 <button class="paint-swatch" style="background:#fff;border:2px solid #bbb" aria-label="سفید" onclick="setColor('#ffffff',this)"></button>
 </div>
-<div class="paint-label">🖌️ اندازه قلم</div>
+<div class="paint-label">🪣 رنگ‌آمیزی هوشمند</div><div class="actions"><button id="paintToolBrush" class="primary" onclick="setPaintTool('brush')">🖌️ قلم‌مو</button><button id="paintToolBucket" onclick="setPaintTool('bucket')">🪣 سطل رنگ</button></div><div class="paint-hint">یک الگو انتخاب کن، رنگت را بزن، بعد سطل رنگ را انتخاب کن و وسط هر قسمت بسته لمس کن.</div><div class="paint-label">🖌️ اندازه قلم</div>
 <div class="actions"><button onclick="setBrush(6)">نازک</button><button class="primary" onclick="setBrush(13)">متوسط</button><button onclick="setBrush(23)">ضخیم</button><button onclick="setEraser()">پاک‌کن 🧽</button></div>
 <div class="paint-label">✨ مهرهای بامزه (انتخاب کن و روی صفحه بزن)</div>
 <div class="actions"><button onclick="chooseStamp('⭐')">⭐</button><button onclick="chooseStamp('❤️')">❤️</button><button onclick="chooseStamp('🌸')">🌸</button><button onclick="chooseStamp('🌈')">🌈</button><button onclick="chooseStamp('🦋')">🦋</button><button onclick="chooseStamp('🐱')">🐱</button><button onclick="chooseStamp('☀️')">☀️</button><button onclick="chooseStamp(null)">قلم معمولی</button></div>
@@ -269,14 +269,33 @@ function prevStory(){si=(si+stories.length-1)%stories.length;sp=0;renderStoryPag
 function readStoryPage(){speak(stories[si].pages[sp].voice)}
 function readStory(){readStoryPage()}
 
-const canvas=$('paint'),ctx=canvas.getContext('2d');let drawing=false,ink='#ef476f',brushSize=13,eraser=false,stamp=null,paintUndo=[];
+const canvas=$('paint'),ctx=canvas.getContext('2d');let drawing=false,ink='#ef476f',brushSize=13,eraser=false,stamp=null,paintUndo=[],paintTool='brush';
 function rememberPaint(){paintUndo.push(canvas.toDataURL());if(paintUndo.length>25)paintUndo.shift()}
+function setPaintTool(tool){paintTool=tool;eraser=false;stamp=null;const b=$('paintToolBrush'),k=$('paintToolBucket');if(b)b.classList.toggle('primary',tool==='brush');if(k)k.classList.toggle('primary',tool==='bucket');$('paintFeedback').textContent=tool==='bucket'?'سطل رنگ آماده است؛ وسط یک قسمت بسته را لمس کن 🪣':'قلم‌مو آماده است؛ بکش و نقاشی کن 🖌️'}
 function setColor(c,btn){ink=c;eraser=false;stamp=null;document.querySelectorAll('.paint-swatch').forEach(x=>x.classList.remove('selected'));if(btn)btn.classList.add('selected');$('paintFeedback').textContent='رنگ تازه انتخاب شد! حالا نقاشی کن 🌈'}
 function setBrush(n){brushSize=n;eraser=false;stamp=null;$('paintFeedback').textContent='اندازه قلم عوض شد 🖌️'}
 function setEraser(){eraser=true;stamp=null;$('paintFeedback').textContent='پاک‌کن آماده است؛ روی قسمت اشتباه بکش 🧽'}
 function chooseStamp(x){stamp=x;eraser=false;$('paintFeedback').textContent=x?'مهر انتخاب شد؛ روی صفحه بزن تا اضافه شود!':'قلم معمولی انتخاب شد'}
 function pos(e){let r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
-function paintDown(e){e.preventDefault();const p=pos(e);if(stamp){rememberPaint();ctx.save();ctx.font='52px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(stamp,p.x,p.y);ctx.restore();return}rememberPaint();drawing=true;canvas.setPointerCapture(e.pointerId);ctx.beginPath();ctx.moveTo(p.x,p.y)}
+
+function fillPaintRegion(x,y){
+ const w=canvas.width,h=canvas.height;if(x<0||y<0||x>=w||y>=h)return;
+ let data;try{data=ctx.getImageData(0,0,w,h)}catch(err){$('paintFeedback').textContent='این قسمت قابل رنگ‌آمیزی نیست؛ دوباره امتحان کن.';return}
+ const d=data.data,start=(y*w+x)*4,sr=d[start],sg=d[start+1],sb=d[start+2];
+ const boundary=i=>{const r=d[i],g=d[i+1],b=d[i+2];return r<215&&g<215&&b<215&&Math.max(r,g,b)-Math.min(r,g,b)<55};
+ if(boundary(start)){$('paintFeedback').textContent='وسط قسمت سفید را لمس کن، نه روی خط را 😊';return}
+ const matches=i=>Math.abs(d[i]-sr)<24&&Math.abs(d[i+1]-sg)<24&&Math.abs(d[i+2]-sb)<24;
+ const seen=new Uint8Array(w*h),stack=new Int32Array(w*h);let top=0;stack[top++]=y*w+x;seen[y*w+x]=1;
+ const rr=parseInt(ink.slice(1,3),16),gg=parseInt(ink.slice(3,5),16),bb=parseInt(ink.slice(5,7),16);let count=0;
+ while(top){const p=stack[--top],px=p%w,py=(p/w)|0,i=p*4;if(boundary(i)||!matches(i))continue;
+ d[i]=rr;d[i+1]=gg;d[i+2]=bb;d[i+3]=255;count++;
+ const ns=[px>0?p-1:-1,px<w-1?p+1:-1,py>0?p-w:-1,py<h-1?p+w:-1];
+ for(let k=0;k<4;k++){const n=ns[k];if(n>=0&&!seen[n]){seen[n]=1;stack[top++]=n}}
+ }
+ if(count){rememberPaint();ctx.putImageData(data,0,0);$('paintFeedback').textContent='آفرین! این قسمت رنگ شد 🌈'}
+ else $('paintFeedback').textContent='اینجا رنگ نشد؛ وسط یک قسمت روشن را لمس کن.';
+}
+function paintDown(e){e.preventDefault();const p=pos(e);if(paintTool==='bucket'){fillPaintRegion(Math.floor(p.x),Math.floor(p.y));return}if(stamp){rememberPaint();ctx.save();ctx.font='52px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(stamp,p.x,p.y);ctx.restore();return}rememberPaint();drawing=true;canvas.setPointerCapture(e.pointerId);ctx.beginPath();ctx.moveTo(p.x,p.y)}
 function paintMove(e){if(!drawing)return;const p=pos(e);ctx.lineWidth=eraser?32:brushSize;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=eraser?'#ffffff':ink;ctx.lineTo(p.x,p.y);ctx.stroke()}
 function paintUp(){drawing=false}
 canvas.addEventListener('pointerdown',paintDown);canvas.addEventListener('pointermove',paintMove);['pointerup','pointercancel','lostpointercapture'].forEach(ev=>canvas.addEventListener(ev,paintUp));
@@ -298,7 +317,7 @@ let currentPaintPoem='';
 function readPaintPoem(){if(currentPaintPoem)speak(currentPaintPoem);else speak('اول یک الگوی نقاشی انتخاب کن')}
 function stopPaintPoem(){if('speechSynthesis'in window)speechSynthesis.cancel()}
 function showPaintPoem(type){const p=drawingPoems[type];if(!p)return;currentPaintPoem=p.text;$('paintPoemTitle').textContent=p.title;$('paintPoemText').textContent=p.text;speak(p.text)}
-function drawTemplate(type){rememberPaint();paintBackground();ctx.save();ctx.strokeStyle='#b8b8c9';ctx.lineWidth=7;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([10,9]);ctx.beginPath();
+function drawTemplate(type){rememberPaint();paintBackground();ctx.save();ctx.strokeStyle='#b8b8c9';ctx.lineWidth=8;ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.beginPath();
 if(type==='house'){ctx.moveTo(230,230);ctx.lineTo(400,90);ctx.lineTo(570,230);ctx.lineTo(230,230);ctx.moveTo(270,230);ctx.lineTo(270,400);ctx.lineTo(530,400);ctx.lineTo(530,230);ctx.moveTo(370,400);ctx.lineTo(370,300);ctx.lineTo(430,300);ctx.lineTo(430,400);ctx.moveTo(300,270);ctx.lineTo(350,270);ctx.lineTo(350,320);ctx.lineTo(300,320);ctx.closePath()}
 if(type==='sun'){ctx.arc(400,240,105,0,Math.PI*2);for(let a=0;a<Math.PI*2;a+=Math.PI/4){ctx.moveTo(400+125*Math.cos(a),240+125*Math.sin(a));ctx.lineTo(400+175*Math.cos(a),240+175*Math.sin(a))}}
 if(type==='flower'){ctx.arc(400,170,48,0,Math.PI*2);for(let a=0;a<Math.PI*2;a+=Math.PI/3){ctx.moveTo(400+48*Math.cos(a),170+48*Math.sin(a));ctx.arc(400+85*Math.cos(a),170+85*Math.sin(a),38,0,Math.PI*2)}ctx.moveTo(400,220);ctx.lineTo(400,420);ctx.moveTo(400,330);ctx.quadraticCurveTo(300,260,290,350);ctx.quadraticCurveTo(350,370,400,330)}
@@ -321,7 +340,7 @@ butterfly:['بال‌های بزرگ پروانه را رنگ کن.','بال‌�
 car:['بدنه ماشین را رنگ کن.','شیشه‌ها و چراغ‌ها را رنگ‌آمیزی کن.','چرخ‌ها را تیره کن؛ ماشین آماده حرکت است!'],
 apple:['بدنه سیب را قرمز یا سبز رنگ کن.','برگ سیب را سبز کن.','یک ساقه کوچک بکش؛ سیب خوشمزه شد!']
 };
-function setPaintMode(m){paintMode=m;['Free','Color','Learn'].forEach(x=>{const el=$('mode'+x);if(el)el.classList.toggle('primary',x.toLowerCase()===m)});const actions=document.querySelector('#paintGuide .actions');if(actions)actions.style.display=m==='learn'?'flex':'none';const t={free:'نقاشی آزاد: هر چیزی دوست داری بکش! الگو هم می‌توانی انتخاب کنی.',color:'رنگ‌آمیزی: یک تصویر انتخاب کن و با قلم‌مو رنگ‌های دلخواهت را به آن اضافه کن.',learn:'قدم‌به‌قدم: الگو را انتخاب کن و مرحله‌ها را یکی‌یکی با راهنمای صوتی انجام بده.'};$('paintGuideText').textContent=t[m];$('paintFeedback').textContent=t[m]}
+function setPaintMode(m){paintMode=m;if(m==='color')setPaintTool('bucket');else setPaintTool('brush');['Free','Color','Learn'].forEach(x=>{const el=$('mode'+x);if(el)el.classList.toggle('primary',x.toLowerCase()===m)});const actions=document.querySelector('#paintGuide .actions');if(actions)actions.style.display=m==='learn'?'flex':'none';const t={free:'نقاشی آزاد: هر چیزی دوست داری بکش! الگو هم می‌توانی انتخاب کنی.',color:'رنگ‌آمیزی: یک تصویر انتخاب کن، سطل رنگ را بزن و وسط قسمت‌های بسته را لمس کن.',learn:'قدم‌به‌قدم: الگو را انتخاب کن و مرحله‌ها را یکی‌یکی با راهنمای صوتی انجام بده.'};$('paintGuideText').textContent=t[m];$('paintFeedback').textContent=t[m]}
 function setPaintBackground(type){rememberPaint();paintBg=type;paintBackground();$('paintFeedback').textContent='پس‌زمینه تازه آماده شد؛ حالا نقاشی کن!'}
 function paintBackground(){ctx.save();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
 if(paintBg==='sky'){ctx.fillStyle='#eaf8ff';ctx.fillRect(0,0,800,480);ctx.fillStyle='#fff';[[140,90],[600,100],[390,55]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,27,0,Math.PI*2);ctx.arc(x+28,y-10,33,0,Math.PI*2);ctx.arc(x+58,y,25,0,Math.PI*2);ctx.fill()})}
