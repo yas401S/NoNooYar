@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#fff4d8">
+<title>نونویار</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(160deg,#fff8e7,#e9f7ff);color:#25304a;min-height:100vh}
+header{padding:18px 16px 12px;text-align:center}h1{font-size:28px;margin:4px;color:#5842a5}header p{margin:6px 0;color:#667085;font-size:14px}
+#stars{display:inline-block;background:#fff;border-radius:22px;padding:8px 14px;font-weight:bold;color:#d18b00;box-shadow:0 3px 12px #0001}
+main{padding:8px 14px 28px;max-width:650px;margin:auto}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tile{border:0;border-radius:24px;min-height:122px;padding:14px;background:white;box-shadow:0 5px 14px #25304a12;font-size:17px;font-weight:bold;color:#29324a;cursor:pointer}
+.tile span{display:block;font-size:42px;margin-bottom:8px}.tile:active,button:active{transform:scale(.97)}
+.panel{background:#fff;border-radius:26px;padding:18px;margin:10px 0;box-shadow:0 5px 18px #25304a12;text-align:center}
+h2{font-size:22px;color:#5842a5;margin:8px 0 14px}.big{font-size:82px;margin:12px}.word{font-size:24px;font-weight:bold;margin:10px}
+.actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+button{border:0;border-radius:17px;padding:13px 18px;font: bold 16px Tahoma;cursor:pointer;background:#e9e5ff;color:#49368f}
+.primary{background:#6551c8;color:white}.back{background:#ffe9c2;color:#825500}
+.option{background:#f3f7ff;min-width:90px;min-height:72px;font-size:22px}
+.hidden{display:none!important}.feedback{font-size:18px;min-height:30px;color:#16834a;font-weight:bold}
+canvas{width:100%;height:260px;border:2px dashed #c8bce9;border-radius:18px;touch-action:none;background:white}
+footer{text-align:center;color:#8590a4;font-size:12px;padding:18px}
+@media(min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+</style></head>
+<body>
+<header><h1>🌈 نونویار</h1><p>بازی کن، یاد بگیر، ستاره بگیر!</p><div id="stars">⭐ ستاره‌ها: <b id="score">0</b></div></header>
+<main>
+<section id="home"><div class="grid">
+<button class="tile" onclick="openSection('letters')"><span>🔤</span>حروف الفبا</button>
+<button class="tile" onclick="openSection('numbers')"><span>🔢</span>بازی اعداد</button>
+<button class="tile" onclick="openSection('colors')"><span>🎨</span>رنگ‌ها و شکل‌ها</button>
+<button class="tile" onclick="openSection('animals')"><span>🐻</span>دوستان حیوان</button>
+<button class="tile" onclick="openSection('memory')"><span>🧠</span>بازی حافظه</button>
+<button class="tile" onclick="openSection('draw')"><span>🖍️</span>نقاشی من</button>
+</div></section>
+<section id="letters" class="hidden panel"><h2>حروف الفبا</h2><div class="big" id="letter">آ</div><div class="word" id="letterWord">آ مثل آسمان ☁️</div><div class="actions"><button onclick="prevLetter()">قبلی</button><button class="primary" onclick="sayLetter()">🔊 بشنو</button><button onclick="nextLetter()">بعدی</button></div></section>
+<section id="numbers" class="hidden panel"><h2>چند تا ستاره می‌بینی؟</h2><div class="big" id="countStars">⭐⭐⭐</div><div class="actions" id="numberChoices"></div><div class="feedback" id="numberFeedback"></div><button class="primary" onclick="newNumber()">سؤال تازه</button></section>
+<section id="colors" class="hidden panel"><h2>رنگ درست را پیدا کن</h2><div class="big" id="colorTarget">🔴</div><div class="word" id="colorName">قرمز</div><div class="actions" id="colorChoices"></div><div class="feedback" id="colorFeedback"></div><button class="primary" onclick="newColor()">بازی تازه</button></section>
+<section id="animals" class="hidden panel"><h2>دوست حیوانی را بشناس</h2><div class="big" id="animalEmoji">🐱</div><div class="word" id="animalName">گربه</div><div class="actions"><button class="primary" onclick="speak(animalName.textContent)">🔊 اسمش را بگو</button><button onclick="nextAnimal()">حیوان بعدی</button></div></section>
+<section id="memory" class="hidden panel"><h2>دو تا شکل یکسان پیدا کن</h2><p>دو کارت را باز کن و جفت‌ها را پیدا کن.</p><div class="grid" id="memoryGrid"></div><div class="feedback" id="memoryFeedback"></div><button class="primary" onclick="startMemory()">شروع دوباره</button></section>
+<section id="draw" class="hidden panel"><h2>نقاشی آزاد</h2><p>با انگشتت نقاشی بکش!</p><canvas id="paint" width="600" height="360"></canvas><div class="actions"><button onclick="setColor('#ef476f')">🩷 صورتی</button><button onclick="setColor('#247ba0')">🩵 آبی</button><button onclick="setColor('#f6bd16')">💛 زرد</button><button onclick="setColor('#35a66f')">💚 سبز</button><button class="back" onclick="clearPaint()">پاک کن</button></div></section>
+<div class="actions"><button class="back" onclick="goHome()">🏠 خانه</button></div>
+</main><footer>برای بازی و یادگیری کودک ۴ ساله • نسخه آفلاین</footer>
+<script>
+const $=id=>document.getElementById(id);
+let score=Number(localStorage.getItem('noonoo-stars')||0);
+function updateScore(){$('score').textContent=score;localStorage.setItem('noonoo-stars',score)}
+function reward(){score++;updateScore();speak('آفرین! عالی بود')}
+function speak(t){if(!('speechSynthesis'in window))return; speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='fa-IR';u.rate=.82;speechSynthesis.speak(u)}
+function goHome(){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));$('home').classList.remove('hidden')}
+function openSection(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden');if(id==='numbers')newNumber();if(id==='colors')newColor();if(id==='memory')startMemory()}
+const letters=[['آ','آسمان'],['ا','انار'],['ب','بابا'],['پ','پروانه'],['ت','توپ'],['ث','ثریا'],['ج','جوجه'],['چ','چتر'],['ح','حوله'],['خ','خرگوش'],['د','درخت'],['ذ','ذرت'],['ر','رنگین‌کمان'],['ز','زرافه'],['ژ','ژاکت'],['س','سیب'],['ش','شیر'],['ص','صدف'],['ض','ضربان'],['ط','طوطی'],['ظ','ظرف'],['ع','عسل'],['غ','غنچه'],['ف','فیل'],['ق','قلم'],['ک','کتاب'],['گ','گلابی'],['ل','لاله'],['م','ماه'],['ن','نان'],['و','ورزش'],['ه','هوا'],['ی','یاس']];
+let li=0;function showLetter(){ $('letter').textContent=letters[li][0];$('letterWord').textContent=letters[li][0]+' مثل '+letters[li][1] }function nextLetter(){li=(li+1)%letters.length;showLetter()}function prevLetter(){li=(li+letters.length-1)%letters.length;showLetter()}function sayLetter(){speak(letters[li][0]+'، مثل '+letters[li][1])}
+let n=3;function newNumber(){n=1+Math.floor(Math.random()*10);$('countStars').textContent='⭐'.repeat(n);$('numberFeedback').textContent='';$('numberChoices').innerHTML='';[n,Math.max(1,n-1),Math.min(10,n+1)].sort(()=>Math.random()-.5).forEach(v=>{let b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>{if(v===n){$('numberFeedback').textContent='آفرین! درست گفتی 🌟';reward()}else{$('numberFeedback').textContent='یک بار دیگر بشمار عزیزم';speak('دوباره بشمار')}};$('numberChoices').append(b)})}
+const colors=[['قرمز','🔴','#ef476f'],['آبی','🔵','#247ba0'],['زرد','🟡','#f6bd16'],['سبز','🟢','#35a66f'],['بنفش','🟣','#8e63ce'],['نارنجی','🟠','#f28c28']];
+let ci=0;function newColor(){ci=Math.floor(Math.random()*colors.length);$('colorTarget').textContent=colors[ci][1];$('colorName').textContent='رنگ '+colors[ci][0]+' را پیدا کن';$('colorFeedback').textContent='';$('colorChoices').innerHTML='';colors.slice().sort(()=>Math.random()-.5).forEach(c=>{let b=document.createElement('button');b.className='option';b.textContent=c[1];b.onclick=()=>{if(c===colors[ci]){$('colorFeedback').textContent='آفرین! چه رنگ‌شناس خوبی!';reward()}else $('colorFeedback').textContent='دوباره تلاش کن'};$('colorChoices').append(b)})}
+const animals=[['🐱','گربه'],['🐶','سگ'],['🐮','گاو'],['🐑','گوسفند'],['🦁','شیر'],['🐘','فیل'],['🐰','خرگوش'],['🐸','قورباغه'],['🐔','مرغ'],['🦆','اردک']];let ai=0;function nextAnimal(){ai=(ai+1)%animals.length;$('animalEmoji').textContent=animals[ai][0];$('animalName').textContent=animals[ai][1];speak(animals[ai][1])}
+let deck=[],opened=[],matched=0;function startMemory(){deck=['🐶','🐱','🐸','🦁','🐶','🐱','🐸','🦁'].sort(()=>Math.random()-.5);opened=[];matched=0;$('memoryFeedback').textContent='';$('memoryGrid').innerHTML='';deck.forEach((v,i)=>{let b=document.createElement('button');b.className='tile';b.style.minHeight='75px';b.textContent='❔';b.onclick=()=>flip(b,v,i);$('memoryGrid').append(b)})}
+function flip(b,v,i){if(opened.length===2||b.dataset.done||opened.some(x=>x.i===i))return;b.textContent=v;opened.push({b,v,i});if(opened.length===2){if(opened[0].v===opened[1].v){opened.forEach(x=>x.b.dataset.done='1');matched++;opened=[];if(matched===4){$('memoryFeedback').textContent='همه جفت‌ها را پیدا کردی!';reward()}}else{let pair=opened;setTimeout(()=>pair.forEach(x=>x.b.textContent='❔'),650);opened=[]}}}
+const canvas=$('paint'),ctx=canvas.getContext('2d');let drawing=false,ink='#ef476f';function setColor(c){ink=c}function clearPaint(){ctx.clearRect(0,0,canvas.width,canvas.height)}function pos(e){let r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}canvas.addEventListener('pointerdown',e=>{drawing=true;let p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});canvas.addEventListener('pointermove',e=>{if(!drawing)return;let p=pos(e);ctx.lineWidth=9;ctx.lineCap='round';ctx.strokeStyle=ink;ctx.lineTo(p.x,p.y);ctx.stroke()});['pointerup','pointercancel','pointerleave'].forEach(ev=>canvas.addEventListener(ev,()=>drawing=false));
+updateScore();showLetter();
+</script></body></html>
