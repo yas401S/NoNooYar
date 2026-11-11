@@ -87,7 +87,7 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 </div></div></section>
 <section id="numbers" class="hidden panel"><h2>⭐ چند تا ستاره می‌بینی؟</h2><div class="big" id="countStars">⭐⭐⭐</div><div class="actions" id="numberChoices"></div><div class="feedback" id="numberFeedback"></div><button class="primary" onclick="newNumber()">سؤال تازه</button></section>
 <section id="colors" class="hidden panel"><h2>🎨 رنگ درست را پیدا کن</h2><div class="big" id="colorTarget">🔴</div><div class="word" id="colorName">قرمز</div><div class="actions" id="colorChoices"></div><div class="feedback" id="colorFeedback"></div><button class="primary" onclick="newColor()">بازی تازه</button></section>
-<section id="animals" class="hidden panel"><h2>🐾 باغ‌وحش نونویار</h2><p>حیوان‌ها و حشره‌های کوچولو را ببین، اسمشان را یاد بگیر، صدایشان را بشنو و شعرشان را گوش کن! 🌿</p><div class="actions"><button id="animalTabAll" class="primary" onclick="filterAnimals('all')">همه 🐾</button><button id="animalTabMammal" onclick="filterAnimals('animal')">حیوانات 🦁</button><button id="animalTabBug" onclick="filterAnimals('bug')">حشرات 🐝</button></div><div class="big" id="animalEmoji" style="font-size:100px;margin:12px">🐱</div><div class="word" id="animalName">گربه</div><div class="feedback" id="animalFact">گربه با پنجه‌های نرم راه می‌رود.</div><div class="paint-poem" style="display:block"><div class="paint-poem-title">🎵 شعر کوچولوی من</div><div id="animalPoem">گربه ناز و ملوسه؛ میو میو می‌کنه</div></div><div class="actions"><button class="primary" onclick="speakAnimalName()">🔊 اسم و معرفی</button><button onclick="playAnimalSound()">🐾 صدای حیوان</button><button onclick="readAnimalPoem()">🎵 شعر را بخوان</button></div><div class="actions"><button onclick="prevAnimal()">⬅️ قبلی</button><button onclick="randomAnimal()">🎲 شانسی</button><button class="primary" onclick="nextAnimal()">بعدی ➡️</button></div><div class="feedback" id="animalCounter">۱ از ۳۰</div></section>
+<section id="animals" class="hidden panel"><h2>🐾 باغ‌وحش نونویار</h2><p>حیوان‌ها و حشره‌های کوچولو را ببین، اسمشان را یاد بگیر، صدایشان را بشنو و شعرشان را گوش کن! 🌿</p><div class="actions"><button id="animalTabAll" class="primary" onclick="filterAnimals('all')">همه 🐾</button><button id="animalTabMammal" onclick="filterAnimals('animal')">حیوانات 🦁</button><button id="animalTabBug" onclick="filterAnimals('bug')">حشرات 🐝</button></div><div class="big" id="animalEmoji" style="font-size:100px;margin:12px">🐱</div><div class="word" id="animalName">گربه</div><div class="feedback" id="animalFact">گربه با پنجه‌های نرم راه می‌رود.</div><div class="paint-poem" style="display:block"><div class="paint-poem-title">🎵 شعر کوچولوی من</div><div id="animalPoem">گربه ناز و ملوسه؛ میو میو می‌کنه</div></div><div class="actions"><button class="primary" onclick="speakAnimalName()">🔊 اسم و معرفی</button><button onclick="playAnimalSound()">🐾 صدای واقعی</button><button onclick="readAnimalPoem()">🎵 شعر را بخوان</button><button onclick="stopAnimalAudio()">⏹ توقف صدا</button></div><div class="feedback" id="animalSoundStatus">🔒 صداهای آماده‌شده داخل برنامه هستند و بدون اینترنت پخش می‌شوند.</div><p style="font-size:12px;color:#718096">برای بعضی حیوان‌ها که فایل ضبط‌شدهٔ آزاد پیدا نشده، صدای تقلیدی با گفتار دستگاه پخش می‌شود.</p><div class="actions"><button onclick="prevAnimal()">⬅️ قبلی</button><button onclick="randomAnimal()">🎲 شانسی</button><button class="primary" onclick="nextAnimal()">بعدی ➡️</button></div><div class="feedback" id="animalCounter">۱ از ۳۰</div></section>
 <section id="memory" class="hidden panel"><h2>🧠 دو تا شکل یکسان پیدا کن</h2><p>دو کارت را باز کن و جفت‌ها را پیدا کن.</p><div class="grid" id="memoryGrid"></div><div class="feedback" id="memoryFeedback"></div><button class="primary" onclick="startMemory()">شروع دوباره</button></section>
 <section id="draw" class="hidden panel"><h2>🎨 کارگاه نقاشی نونویار</h2>
 <p>به استودیوی هنرمندهای کوچولو خوش اومدی! اول یک مدل انتخاب کن، بعد با شعر و راهنمای نقاشی شروع کن. 🌈</p>
@@ -195,9 +195,25 @@ function nextAnimal(){ai=(ai+1)%animalList.length;renderAnimal();speakAnimalName
 function prevAnimal(){ai=(ai+animalList.length-1)%animalList.length;renderAnimal();speakAnimalName()}
 function randomAnimal(){ai=Math.floor(Math.random()*animalList.length);renderAnimal();speakAnimalName()}
 function speakAnimalName(){const a=animalList[ai];speak(a.n+'. '+a.f)}
-function playAnimalSound(){speak(animalList[ai].s)}
-function readAnimalPoem(){speak(animalList[ai].p)}
-function stopAnimalAudio(){if('speechSynthesis'in window)speechSynthesis.cancel()}
+let currentAnimalAudio=null;
+const animalSoundFiles={'سگ':'dog.ogg','گاو':'cow.ogg','گوسفند':'sheep.ogg','قورباغه':'frog.ogg','زنبور':'bee.opus','اسب':'horse.ogg','مرغ':'rooster.ogg','جغد':'bird.wav'};
+function playAnimalSound(){
+ const a=animalList[ai];stopAnimalAudio();
+ const file=animalSoundFiles[a.n];
+ if(file){
+  currentAnimalAudio=new Audio('sounds/'+file);
+  currentAnimalAudio.preload='auto';
+  currentAnimalAudio.onended=()=>{$('animalSoundStatus').textContent='آفرین! صدای '+a.n+' را شنیدی. 🥰'};
+  currentAnimalAudio.onerror=()=>{$('animalSoundStatus').textContent='این نمونه صدا در این دستگاه پخش نشد؛ صدای تقلیدی را می‌شنوی.';speak(a.s)};
+  $('animalSoundStatus').textContent='🔊 صدای '+a.n+' در حال پخش است...';
+  currentAnimalAudio.play().catch(()=>{ $('animalSoundStatus').textContent='پخش صدای ضبط‌شده ممکن نشد؛ صدای تقلیدی را می‌شنوی.';speak(a.s)});
+ }else{
+  $('animalSoundStatus').textContent='برای این حیوان فعلاً صدای تقلیدی پخش می‌شود.';
+  speak(a.s);
+ }
+}
+function readAnimalPoem(){stopAnimalAudio();speak(animalList[ai].p)}
+function stopAnimalAudio(){if(currentAnimalAudio){currentAnimalAudio.pause();currentAnimalAudio.currentTime=0;currentAnimalAudio=null}if('speechSynthesis'in window)speechSynthesis.cancel()}
 
 let deck=[],opened=[],matched=0;function startMemory(){deck=['🐶','🐱','🐸','🦁','🐶','🐱','🐸','🦁'].sort(()=>Math.random()-.5);opened=[];matched=0;$('memoryFeedback').textContent='';$('memoryGrid').innerHTML='';deck.forEach((v,i)=>{let b=document.createElement('button');b.className='tile';b.style.minHeight='75px';b.textContent='❔';b.onclick=()=>flip(b,v,i);$('memoryGrid').append(b)})}
 function flip(b,v,i){if(opened.length===2||b.dataset.done||opened.some(x=>x.i===i))return;b.textContent=v;opened.push({b,v,i});if(opened.length===2){if(opened[0].v===opened[1].v){opened.forEach(x=>x.b.dataset.done='1');matched++;opened=[];if(matched===4){$('memoryFeedback').textContent='همه جفت‌ها را پیدا کردی!';reward()}}else{let pair=opened;opened=[];setTimeout(()=>pair.forEach(x=>x.b.textContent='❔'),650)}}}
