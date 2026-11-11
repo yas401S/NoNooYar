@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
-        android:label="نونویار"
+        android:label="یاسین‌لند"
         android:usesCleartextTraffic="false"
         android:allowBackup="true"
         android:supportsRtl="true">
