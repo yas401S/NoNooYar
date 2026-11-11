@@ -26,6 +26,16 @@ button{border:0;border-radius:22px;padding:13px 17px;font:bold 16px Tahoma;curso
 .option{background:#f3f7ff;min-width:76px;min-height:70px;font-size:25px;border:3px solid white;box-shadow:0 4px 0 #cbd8e8}
 .hidden{display:none!important}.feedback{font-size:18px;min-height:32px;color:#16834a;font-weight:bold;margin:10px 0}
 canvas{width:100%;height:260px;border:3px dashed #c8bce9;border-radius:20px;touch-action:none;background:white}
+.paint-mode-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.paint-mode-row button{flex:1;min-width:105px}
+.paint-guide{background:#edf8ff;border:2px solid #a9d9f2;border-radius:18px;padding:12px;margin:12px 0;color:#315d83;line-height:1.8;font-weight:bold}
+.paint-guide-title{font-size:18px;color:#286c9b;margin-bottom:5px}
+.paint-gallery{background:#f5efff;border:2px solid #d6c4f5;border-radius:18px;padding:12px;margin-top:14px}
+.paint-gallery-list{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.paint-gallery-card{background:#fff;border-radius:12px;padding:7px;width:112px;box-shadow:0 2px 6px #ddd}
+.paint-gallery-card img{width:100%;height:66px;object-fit:contain;background:#fff;border:1px solid #eee;border-radius:7px}
+.paint-gallery-card button{font-size:12px;min-height:32px;padding:5px;margin-top:4px}
+.paint-poem{white-space:pre-line}
 #paint{height:auto;aspect-ratio:5/3;border:4px solid #b8dff2;border-radius:20px;background:#fff;touch-action:none;display:block;margin:12px auto}
 .paint-tools{background:#fff7dc;border:2px solid #f2d48a;border-radius:20px;padding:12px;margin:12px 0}
 .paint-label{font-weight:bold;color:#7045bd;margin:12px 0 7px}
@@ -80,7 +90,8 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <section id="animals" class="hidden panel"><h2>🐾 دوست حیوانی را بشناس</h2><div class="big" id="animalEmoji">🐱</div><div class="word" id="animalName">گربه</div><div class="actions"><button class="primary" onclick="speak($('animalName').textContent)">🔊 اسمش را بگو</button><button onclick="nextAnimal()">حیوان بعدی</button></div></section>
 <section id="memory" class="hidden panel"><h2>🧠 دو تا شکل یکسان پیدا کن</h2><p>دو کارت را باز کن و جفت‌ها را پیدا کن.</p><div class="grid" id="memoryGrid"></div><div class="feedback" id="memoryFeedback"></div><button class="primary" onclick="startMemory()">شروع دوباره</button></section>
 <section id="draw" class="hidden panel"><h2>🎨 کارگاه نقاشی نونویار</h2>
-<p>یکی از رنگ‌ها را انتخاب کن و با انگشتت روی صفحه نقاشی بکش! 🖍️</p>
+<p>به استودیوی هنرمندهای کوچولو خوش اومدی! اول یک مدل انتخاب کن، بعد با شعر و راهنمای نقاشی شروع کن. 🌈</p>
+<div class="paint-mode-row"><button class="primary" id="modeFree" onclick="setPaintMode('free')">🖍️ نقاشی آزاد</button><button id="modeColor" onclick="setPaintMode('color')">🧩 رنگ‌آمیزی</button><button id="modeLearn" onclick="setPaintMode('learn')">👩‍🎨 قدم‌به‌قدم</button></div>
 <div class="paint-tools">
 <div class="paint-label">🌈 رنگ‌ها</div>
 <div class="paint-colors">
@@ -97,13 +108,17 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <div class="actions"><button onclick="setBrush(6)">نازک</button><button class="primary" onclick="setBrush(13)">متوسط</button><button onclick="setBrush(23)">ضخیم</button><button onclick="setEraser()">پاک‌کن 🧽</button></div>
 <div class="paint-label">✨ مهرهای بامزه (انتخاب کن و روی صفحه بزن)</div>
 <div class="actions"><button onclick="chooseStamp('⭐')">⭐</button><button onclick="chooseStamp('❤️')">❤️</button><button onclick="chooseStamp('🌸')">🌸</button><button onclick="chooseStamp('🌈')">🌈</button><button onclick="chooseStamp('🦋')">🦋</button><button onclick="chooseStamp('🐱')">🐱</button><button onclick="chooseStamp('☀️')">☀️</button><button onclick="chooseStamp(null)">قلم معمولی</button></div>
+<div class="paint-label">🌤️ پس‌زمینه نقاشی</div>
+<div class="actions"><button onclick="setPaintBackground('paper')">📄 سفید</button><button onclick="setPaintBackground('sky')">☁️ آسمان</button><button onclick="setPaintBackground('garden')">🌳 باغ</button><button onclick="setPaintBackground('sea')">🌊 دریا</button></div>
 <div class="paint-label">🧩 چی بکشیم؟ یک الگو انتخاب کن</div>
 <div class="actions"><button onclick="drawTemplate('house')">خانه 🏠</button><button onclick="drawTemplate('sun')">خورشید ☀️</button><button onclick="drawTemplate('flower')">گل 🌷</button><button onclick="drawTemplate('fish')">ماهی 🐟</button><button onclick="drawTemplate('tree')">درخت 🌳</button><button onclick="drawTemplate('butterfly')">پروانه 🦋</button><button onclick="drawTemplate('car')">ماشین 🚗</button><button onclick="drawTemplate('apple')">سیب 🍎</button></div>
 </div>
+<div class="paint-guide" id="paintGuide"><div class="paint-guide-title">👩‍🎨 راهنمای نقاش کوچولو</div><div id="paintGuideText">یک تصویر انتخاب کن تا قدم‌های نقاشی را با هم یاد بگیریم.</div><div class="actions"><button onclick="readPaintStep()">🔊 راهنمای صوتی</button><button class="primary" onclick="nextPaintStep()">مرحله بعد ➡️</button></div></div>
 <div class="paint-poem" id="paintPoem"><div class="paint-poem-title" id="paintPoemTitle">🎵 شعر نقاشی</div><div id="paintPoemText">یکی از الگوها را انتخاب کن تا شعر قشنگش را با هم بخوانیم!</div><div class="actions"><button class="primary" onclick="readPaintPoem()">🔊 دوباره شعر را بخوان</button><button onclick="stopPaintPoem()">⏹️ توقف</button></div></div>
 <canvas id="paint" width="800" height="480" aria-label="صفحه نقاشی کودک"></canvas>
 <div class="actions"><button onclick="undoPaint()">↩️ برگشت</button><button onclick="clearPaint()">🧹 پاک کردن همه</button><button class="primary" onclick="savePaint()">💾 ذخیره نقاشی</button><button onclick="loadPaint()">📂 نقاشی قبلی</button></div>
 <div class="feedback" id="paintFeedback">آماده‌ای هنرمند کوچولو؟ 💛</div>
+<div class="paint-gallery"><div class="paint-label">🖼️ گالری نقاشی‌های من</div><div id="paintGalleryList" class="paint-gallery-list">هنوز نقاشی ذخیره‌شده‌ای نداری.</div></div>
 </section>
 <section id="poems" class="hidden panel"><h2>🎵 شعرهای شاد نونویار</h2><div class="storypic" id="poemPic">🌞</div><div class="poem" id="poemText"></div><div class="pager" id="poemPage"></div><div class="actions"><button onclick="prevPoem()">قبلی</button><button class="primary" onclick="readPoem()">🔊 شعر رو بخون</button><button onclick="nextPoem()">شعر بعدی</button></div></section>
 <section id="stories" class="hidden panel storybook-panel">
@@ -292,7 +307,38 @@ if(type==='tree'){ctx.moveTo(400,120);ctx.lineTo(400,390);ctx.moveTo(400,180);ct
 if(type==='butterfly'){ctx.moveTo(400,160);ctx.lineTo(400,340);ctx.ellipse(320,210,85,65,-.5,0,Math.PI*2);ctx.ellipse(480,210,85,65,.5,0,Math.PI*2);ctx.ellipse(330,310,60,42,.5,0,Math.PI*2);ctx.ellipse(470,310,60,42,-.5,0,Math.PI*2);ctx.moveTo(400,160);ctx.quadraticCurveTo(360,90,340,100);ctx.moveTo(400,160);ctx.quadraticCurveTo(440,90,460,100)}
 if(type==='car'){ctx.moveTo(210,300);ctx.lineTo(270,210);ctx.lineTo(510,210);ctx.lineTo(590,300);ctx.lineTo(620,300);ctx.lineTo(620,370);ctx.lineTo(190,370);ctx.lineTo(190,300);ctx.closePath();ctx.moveTo(300,210);ctx.lineTo(330,150);ctx.lineTo(470,150);ctx.lineTo(510,210);ctx.arc(280,370,38,0,Math.PI*2);ctx.moveTo(580,370);ctx.arc(540,370,38,0,Math.PI*2)}
 if(type==='apple'){ctx.moveTo(400,170);ctx.bezierCurveTo(270,100,230,230,300,350);ctx.bezierCurveTo(350,440,390,390,400,390);ctx.bezierCurveTo(440,390,480,440,530,350);ctx.bezierCurveTo(600,230,530,100,400,170);ctx.moveTo(400,170);ctx.lineTo(420,100);ctx.moveTo(420,130);ctx.quadraticCurveTo(480,70,510,130)}
-ctx.stroke();ctx.restore();$('paintFeedback').textContent='حالا الگو را با رنگ‌های دلخواهت کامل کن! 🌟';showPaintPoem(type)}
+ctx.stroke();ctx.restore();$('paintFeedback').textContent='حالا الگو را با رنگ‌های دلخواهت کامل کن! 🌟';showPaintPoem(type);beginPaintLesson(type)}
+
+
+let paintMode='free',paintBg='paper',paintLessonType='',paintStep=0,paintLessonDone=false;
+const paintLessons={
+house:['اول سقف مثلثی خانه را با انگشت دنبال کن.','حالا دیوارهای خانه را بکش و رنگ کن.','در و پنجره را کامل کن؛ خانه آماده شد!'],
+sun:['یک دایره بزرگ برای صورت خورشید رنگ کن.','دور خورشید پرتوهای زرد بکش.','برای خورشید چشم و لبخند بگذار!'],
+flower:['وسط گل را رنگ کن.','گلبرگ‌ها را یکی‌یکی رنگ‌آمیزی کن.','ساقه و برگ‌های سبز را کامل کن.'],
+fish:['بدن ماهی را رنگ کن.','دم و باله‌های ماهی را کامل کن.','چشم و چند حباب آبی اضافه کن.'],
+tree:['تنه درخت را قهوه‌ای رنگ کن.','تاج درخت را سبز و پر برگ کن.','چند میوه یا پرنده به درخت اضافه کن.'],
+butterfly:['بال‌های بزرگ پروانه را رنگ کن.','بال‌های کوچک را با رنگ دیگری تزئین کن.','بدن و شاخک‌های پروانه را کامل کن.'],
+car:['بدنه ماشین را رنگ کن.','شیشه‌ها و چراغ‌ها را رنگ‌آمیزی کن.','چرخ‌ها را تیره کن؛ ماشین آماده حرکت است!'],
+apple:['بدنه سیب را قرمز یا سبز رنگ کن.','برگ سیب را سبز کن.','یک ساقه کوچک بکش؛ سیب خوشمزه شد!']
+};
+function setPaintMode(m){paintMode=m;['Free','Color','Learn'].forEach(x=>{const el=$('mode'+x);if(el)el.classList.toggle('primary',x.toLowerCase()===m)});const t={free:'نقاشی آزاد: هر چیزی دوست داری بکش!',color:'رنگ‌آمیزی: یک الگو انتخاب کن و قسمت‌هایش را رنگ کن.',learn:'قدم‌به‌قدم: الگو را انتخاب کن و مرحله‌ها را یکی‌یکی انجام بده.'};$('paintFeedback').textContent=t[m];}
+function setPaintBackground(type){rememberPaint();paintBg=type;paintBackground();$('paintFeedback').textContent='پس‌زمینه تازه آماده شد؛ حالا نقاشی کن!'}
+function paintBackground(){ctx.save();ctx.setLineDash([]);ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+if(paintBg==='sky'){ctx.fillStyle='#eaf8ff';ctx.fillRect(0,0,800,480);ctx.fillStyle='#fff';[[140,90],[600,100],[390,55]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,27,0,Math.PI*2);ctx.arc(x+28,y-10,33,0,Math.PI*2);ctx.arc(x+58,y,25,0,Math.PI*2);ctx.fill()})}
+if(paintBg==='garden'){ctx.fillStyle='#f1fbe9';ctx.fillRect(0,0,800,480);ctx.fillStyle='#c8edb1';ctx.fillRect(0,365,800,115);ctx.fillStyle='#fff';for(let x=45;x<800;x+=115){ctx.beginPath();ctx.arc(x,400,5,0,Math.PI*2);ctx.fill()}}
+if(paintBg==='sea'){ctx.fillStyle='#e5f8ff';ctx.fillRect(0,0,800,480);ctx.fillStyle='#a8e1f5';ctx.fillRect(0,300,800,180);ctx.strokeStyle='#fff';ctx.lineWidth=5;for(let x=20;x<800;x+=90){ctx.beginPath();ctx.moveTo(x,345);ctx.quadraticCurveTo(x+22,330,x+45,345);ctx.stroke()}}
+ctx.restore()}
+function beginPaintLesson(type){paintLessonType=type;paintStep=0;paintLessonDone=false;const steps=paintLessons[type]||[];if(!steps.length)return;renderPaintStep()}
+function renderPaintStep(){const steps=paintLessons[paintLessonType]||[];$('paintGuideText').textContent=steps.length?'مرحله '+(paintStep+1)+' از '+steps.length+' : '+steps[paintStep]:'یک تصویر انتخاب کن تا راهنمایش را ببینی.'}
+function readPaintStep(){const steps=paintLessons[paintLessonType]||[];if(steps.length)speak(steps[paintStep]);else speak('یک الگوی نقاشی انتخاب کن')}
+function nextPaintStep(){const steps=paintLessons[paintLessonType]||[];if(!steps.length){speak('اول یک الگوی نقاشی انتخاب کن');return}if(paintStep<steps.length-1){paintStep++;renderPaintStep();readPaintStep()}else{$('paintGuideText').textContent='آفرین هنرمند کوچولو! نقاشی '+drawingPoems[paintLessonType].title.replace(/^\S+\s/,'')+' تموم شد!';if(!paintLessonDone){paintLessonDone=true;reward()}speak('آفرین! نقاشی تو کامل شد!')}}
+function readPaintPoem(){if(currentPaintPoem)speak(currentPaintPoem);else speak('اول یک الگوی نقاشی انتخاب کن')}
+function savePaint(){try{const data=canvas.toDataURL('image/png');localStorage.setItem('noonoo-last-drawing',data);let list=JSON.parse(localStorage.getItem('noonoo-drawing-gallery')||'[]');list.unshift({image:data,date:new Date().toLocaleDateString('fa-IR'),name:paintLessonType?(drawingPoems[paintLessonType]||{}).title||'نقاشی من':'نقاشی من'});list=list.slice(0,8);localStorage.setItem('noonoo-drawing-gallery',JSON.stringify(list));renderPaintGallery();$('paintFeedback').textContent='نقاشی قشنگت در گالری ذخیره شد! ⭐';reward()}catch(e){$('paintFeedback').textContent='حافظه گوشی پر است؛ چند نقاشی قدیمی را پاک کن.'}}
+function renderPaintGallery(){const root=$('paintGalleryList');if(!root)return;let list=[];try{list=JSON.parse(localStorage.getItem('noonoo-drawing-gallery')||'[]')}catch(e){}root.innerHTML='';if(!list.length){root.textContent='هنوز نقاشی ذخیره‌شده‌ای نداری.';return}list.forEach((item,i)=>{const card=document.createElement('div');card.className='paint-gallery-card';const img=document.createElement('img');img.src=item.image;img.alt=item.name||'نقاشی کودک';const caption=document.createElement('div');caption.textContent=item.name+' · '+item.date;const open=document.createElement('button');open.textContent='باز کردن';open.onclick=()=>loadGalleryPaint(i);const del=document.createElement('button');del.textContent='حذف';del.onclick=()=>deleteGalleryPaint(i);card.append(img,caption,open,del);root.appendChild(card)})}
+function loadGalleryPaint(i){const list=JSON.parse(localStorage.getItem('noonoo-drawing-gallery')||'[]');if(!list[i])return;rememberPaint();const img=new Image();img.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);$('paintFeedback').textContent='نقاشی از گالری باز شد 🎨'};img.src=list[i].image}
+function deleteGalleryPaint(i){const list=JSON.parse(localStorage.getItem('noonoo-drawing-gallery')||'[]');list.splice(i,1);localStorage.setItem('noonoo-drawing-gallery',JSON.stringify(list));renderPaintGallery()}
+const oldOpenSection=openSection;
+function openSection(id){oldOpenSection(id);if(id==='draw'){renderPaintGallery();setPaintMode('free')}}
 
 updateScore();showLetter();
 </script></body></html>
