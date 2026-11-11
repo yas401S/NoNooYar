@@ -3,28 +3,37 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#78d9f2"><title>نونویار</title>
-<style>
-*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;color:#26345b;background:linear-gradient(180deg,#75d9f4 0%,#b9efff 36%,#b9ed91 72%,#72d34f 100%);min-height:100vh}
-header{text-align:center;padding:18px 14px 12px;position:relative}h1{font-size:34px;margin:2px;color:#713cc1;text-shadow:0 3px #fff,0 5px 0 #ffffff80}header p{margin:8px 0;color:#285d83;font-weight:bold}
-#stars{display:inline-block;background:#fff7c9;border:3px solid #ffd65e;border-radius:28px;padding:9px 18px;font-weight:bold;color:#a66a00;box-shadow:0 4px 0 #e6ae38}
-main{padding:8px 14px 28px;max-width:700px;margin:auto}.welcome{background:#fff;border:4px solid #ffdb77;border-radius:28px;padding:14px;text-align:center;margin:6px 0 16px;box-shadow:0 6px 0 #e9b94e}.welcome .faces{font-size:44px}.welcome b{font-size:18px;color:#7144ba}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.tile{border:4px solid #fff;border-radius:26px;min-height:132px;padding:12px 8px;background:linear-gradient(145deg,#fff,#fff8e7);box-shadow:0 6px 0 #b4c8d4,0 9px 14px #29405b30;font-size:17px;font-weight:bold;color:#30416d;cursor:pointer}
-.tile span{display:block;font-size:46px;margin-bottom:7px}.tile:active,button:active{transform:scale(.96)}
-.panel{background:#fffdf5;border:4px solid #fff;border-radius:28px;padding:18px;margin:10px 0;box-shadow:0 7px 0 #b5d1db;text-align:center}
-h2{font-size:23px;color:#7045bd;margin:7px 0 14px}.big{font-size:78px;margin:12px}.word{font-size:23px;font-weight:bold;margin:10px}
-.actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:15px}
-button{border:0;border-radius:20px;padding:13px 17px;font:bold 16px Tahoma;cursor:pointer;background:#e9e5ff;color:#49368f;box-shadow:0 3px 0 #c7b9f2}
-.primary{background:#7952cf;color:white;box-shadow:0 4px 0 #5434a1}.back{background:#ffe7a8;color:#825500;box-shadow:0 3px 0 #e8c36a}
-.option{background:#f3f7ff;min-width:75px;min-height:68px;font-size:23px}
-.hidden{display:none!important}.feedback{font-size:18px;min-height:30px;color:#16834a;font-weight:bold}
-canvas{width:100%;height:260px;border:3px dashed #c8bce9;border-radius:18px;touch-action:none;background:white}
-.poem,.story{background:#fff4ce;border:3px dashed #f0bd52;border-radius:22px;padding:18px;margin:12px 0;font-size:20px;line-height:2.1;font-weight:bold;white-space:pre-line;color:#59417e}
+<style>*{box-sizing:border-box}
+:root{--ink:#29365f;--purple:#7650c8;--pink:#ff7fa8;--yellow:#ffd45c}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#83e2fb 0%,#d9f7ff 38%,#fff4c9 72%,#b8ee9d 100%);min-height:100vh;overflow-x:hidden}
+header{text-align:center;padding:20px 14px 14px}.faces{font-size:38px;filter:drop-shadow(0 3px 1px #ffffffaa)}
+h1{font-size:clamp(32px,8vw,44px);margin:3px;color:#713cc1;text-shadow:0 3px #fff,0 6px 0 #ffffff80}
+header p{margin:8px 0 14px;color:#285d83;font-weight:bold;font-size:15px}
+#stars{display:inline-block;background:#fff8cf;border:3px solid #ffd65e;border-radius:30px;padding:10px 19px;font-weight:bold;color:#a66a00;box-shadow:0 5px 0 #e6ae38;animation:starbob 2.5s ease-in-out infinite}
+main{padding:8px 14px 30px;max-width:760px;margin:auto}
+.welcome{background:linear-gradient(135deg,#fff,#fff5d8);border:4px solid #ffda76;border-radius:30px;padding:16px 12px;text-align:center;margin:6px 0 18px;box-shadow:0 7px 0 #e9b94e,0 12px 22px #526a8530}
+.welcome .faces{font-size:43px}.welcome b{font-size:19px;color:#7144ba;display:block;margin:5px 0}.welcome div:last-child{font-size:14px;color:#86672b}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.tile{border:4px solid #fff;border-radius:27px;min-height:139px;padding:13px 8px;background:linear-gradient(145deg,#fff,#fff8e9);box-shadow:0 7px 0 #b4c8d4,0 10px 16px #29405b25;font-size:17px;font-weight:bold;color:#30416d;cursor:pointer;transition:transform .16s;position:relative;overflow:hidden}
+.tile:nth-child(4n+1){background:linear-gradient(145deg,#fff,#ffe8f0)}.tile:nth-child(4n+2){background:linear-gradient(145deg,#fff,#e7f8ff)}.tile:nth-child(4n+3){background:linear-gradient(145deg,#fff,#fff4cf)}.tile:nth-child(4n){background:linear-gradient(145deg,#fff,#e9f9e5)}
+.tile span{display:block;font-size:49px;margin-bottom:8px;filter:drop-shadow(0 3px 1px #00000012)}
+.tile:active,button:active{transform:scale(.96)}
+.panel{background:linear-gradient(150deg,#fff,#fffdf4);border:4px solid #fff;border-radius:30px;padding:18px 14px;margin:10px 0;box-shadow:0 8px 0 #b5d1db,0 12px 22px #29405b20;text-align:center}
+h2{font-size:23px;color:#7045bd;margin:7px 0 15px}.big{font-size:clamp(58px,16vw,82px);margin:14px 0}.word{font-size:22px;font-weight:bold;margin:10px}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+button{border:0;border-radius:22px;padding:13px 17px;font:bold 16px Tahoma;cursor:pointer;background:#e9e5ff;color:#49368f;box-shadow:0 4px 0 #c7b9f2;transition:transform .14s;touch-action:manipulation}
+.primary{background:linear-gradient(135deg,#9169e5,#7048c6);color:white;box-shadow:0 5px 0 #5434a1}.back{background:#ffe7a8;color:#825500;box-shadow:0 4px 0 #e8c36a}
+.option{background:#f3f7ff;min-width:76px;min-height:70px;font-size:25px;border:3px solid white;box-shadow:0 4px 0 #cbd8e8}
+.hidden{display:none!important}.feedback{font-size:18px;min-height:32px;color:#16834a;font-weight:bold;margin:10px 0}
+canvas{width:100%;height:260px;border:3px dashed #c8bce9;border-radius:20px;touch-action:none;background:white}
+.poem,.story{background:#fff4ce;border:3px dashed #f0bd52;border-radius:24px;padding:18px 12px;margin:12px 0;font-size:20px;line-height:2.1;font-weight:bold;white-space:pre-line;color:#59417e}
 .story{background:#eaf7ff;border-color:#82c9ee;color:#315d83;text-align:right;font-size:18px}
-.storypic{font-size:55px;margin:8px}.pager{color:#8b78aa;font-size:13px}
-footer{text-align:center;color:#315d61;font-size:12px;padding:18px}
+.storypic{font-size:58px;margin:8px;animation:floaty 2.5s ease-in-out infinite}.pager{color:#8b78aa;font-size:13px}
+footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
+@keyframes starbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
 @media(min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
-</style></head>
+@media(max-width:360px){.tile{min-height:122px;font-size:15px}.tile span{font-size:42px}.panel{padding:15px 10px}}</style></head>
 <body>
 <header><div class="faces">☀️ 🌈 ☁️</div><h1>نونویار</h1><p>بازی کن، بخند، یاد بگیر و ستاره بگیر!</p><div id="stars">⭐ ستاره‌های من: <b id="score">0</b></div></header>
 <main>
@@ -59,8 +68,8 @@ function goHome(){document.querySelectorAll('main section').forEach(s=>s.classLi
 function openSection(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden');if(id==='numbers')newNumber();if(id==='colors')newColor();if(id==='memory')startMemory();if(id==='poems')showPoem();if(id==='stories')showStory()}
 const letters=[['آ','آسمان'],['ا','انار'],['ب','بابا'],['پ','پروانه'],['ت','توپ'],['ث','ثریا'],['ج','جوجه'],['چ','چتر'],['ح','حوله'],['خ','خرگوش'],['د','درخت'],['ذ','ذرت'],['ر','رنگین‌کمان'],['ز','زرافه'],['ژ','ژاکت'],['س','سیب'],['ش','شیر'],['ص','صدف'],['ض','ضربان'],['ط','طوطی'],['ظ','ظرف'],['ع','عسل'],['غ','غنچه'],['ف','فیل'],['ق','قلم'],['ک','کتاب'],['گ','گلابی'],['ل','لاله'],['م','ماه'],['ن','نان'],['و','ورزش'],['ه','هوا'],['ی','یاس']];
 let li=0;function showLetter(){$('letter').textContent=letters[li][0];$('letterWord').textContent=letters[li][0]+' مثل '+letters[li][1]}function nextLetter(){li=(li+1)%letters.length;showLetter()}function prevLetter(){li=(li+letters.length-1)%letters.length;showLetter()}function sayLetter(){speak(letters[li][0]+'، مثل '+letters[li][1])}
-let n=3;function newNumber(){n=1+Math.floor(Math.random()*10);$('countStars').textContent='⭐'.repeat(n);$('numberFeedback').textContent='';$('numberChoices').innerHTML='';[n,Math.max(1,n-1),Math.min(10,n+1)].sort(()=>Math.random()-.5).forEach(v=>{let b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>{if(v===n){$('numberFeedback').textContent='آفرین! درست گفتی 🌟';reward()}else{$('numberFeedback').textContent='یک بار دیگر بشمار عزیزم';speak('دوباره بشمار')}};$('numberChoices').append(b)})}
-const colors=[['قرمز','🔴'],['آبی','🔵'],['زرد','🟡'],['سبز','🟢'],['بنفش','🟣'],['نارنجی','🟠']];let ci=0;function newColor(){ci=Math.floor(Math.random()*colors.length);$('colorTarget').textContent=colors[ci][1];$('colorName').textContent='رنگ '+colors[ci][0]+' را پیدا کن';$('colorFeedback').textContent='';$('colorChoices').innerHTML='';colors.slice().sort(()=>Math.random()-.5).forEach(c=>{let b=document.createElement('button');b.className='option';b.textContent=c[1];b.onclick=()=>{if(c===colors[ci]){$('colorFeedback').textContent='آفرین! چه رنگ‌شناس خوبی!';reward()}else $('colorFeedback').textContent='دوباره تلاش کن'};$('colorChoices').append(b)})}
+let n=3;function newNumber(){n=1+Math.floor(Math.random()*10);$('countStars').textContent='⭐'.repeat(n);$('numberFeedback').textContent='';$('numberChoices').innerHTML='';[n,Math.max(1,n-1),Math.min(10,n+1)].sort(()=>Math.random()-.5).forEach(v=>{let b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>{if(v===n){$('numberFeedback').textContent='آفرین! درست گفتی 🌟';$('numberChoices').querySelectorAll('button').forEach(x=>x.disabled=true);reward()}else{$('numberFeedback').textContent='یک بار دیگر بشمار عزیزم';speak('دوباره بشمار')}};$('numberChoices').append(b)})}
+const colors=[['قرمز','🔴'],['آبی','🔵'],['زرد','🟡'],['سبز','🟢'],['بنفش','🟣'],['نارنجی','🟠']];let ci=0;function newColor(){ci=Math.floor(Math.random()*colors.length);$('colorTarget').textContent=colors[ci][1];$('colorName').textContent='رنگ '+colors[ci][0]+' را پیدا کن';$('colorFeedback').textContent='';$('colorChoices').innerHTML='';colors.slice().sort(()=>Math.random()-.5).forEach(c=>{let b=document.createElement('button');b.className='option';b.textContent=c[1];b.onclick=()=>{if(c===colors[ci]){$('colorFeedback').textContent='آفرین! چه رنگ‌شناس خوبی!';$('colorChoices').querySelectorAll('button').forEach(x=>x.disabled=true);reward()}else $('colorFeedback').textContent='دوباره تلاش کن'};$('colorChoices').append(b)})}
 const animals=[['🐱','گربه'],['🐶','سگ'],['🐮','گاو'],['🐑','گوسفند'],['🦁','شیر'],['🐘','فیل'],['🐰','خرگوش'],['🐸','قورباغه'],['🐔','مرغ'],['🦆','اردک']];let ai=0;function nextAnimal(){ai=(ai+1)%animals.length;$('animalEmoji').textContent=animals[ai][0];$('animalName').textContent=animals[ai][1];speak(animals[ai][1])}
 let deck=[],opened=[],matched=0;function startMemory(){deck=['🐶','🐱','🐸','🦁','🐶','🐱','🐸','🦁'].sort(()=>Math.random()-.5);opened=[];matched=0;$('memoryFeedback').textContent='';$('memoryGrid').innerHTML='';deck.forEach((v,i)=>{let b=document.createElement('button');b.className='tile';b.style.minHeight='75px';b.textContent='❔';b.onclick=()=>flip(b,v,i);$('memoryGrid').append(b)})}
 function flip(b,v,i){if(opened.length===2||b.dataset.done||opened.some(x=>x.i===i))return;b.textContent=v;opened.push({b,v,i});if(opened.length===2){if(opened[0].v===opened[1].v){opened.forEach(x=>x.b.dataset.done='1');matched++;opened=[];if(matched===4){$('memoryFeedback').textContent='همه جفت‌ها را پیدا کردی!';reward()}}else{let pair=opened;opened=[];setTimeout(()=>pair.forEach(x=>x.b.textContent='❔'),650)}}}
