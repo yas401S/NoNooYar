@@ -37,7 +37,7 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 .letter-game{margin:18px 0 8px;padding:14px 10px;border:3px solid #f5d98a;border-radius:22px;background:linear-gradient(145deg,#fff8dc,#f2fbff)}
 .letter-game h3{margin:4px 0 8px;color:#7045bd;font-size:18px}.letter-game p{font-size:14px;line-height:1.8}
 #letterQuizChoices button{min-width:88px;min-height:76px;font-size:25px;background:#fff;border:3px solid #dcecff}
-#traceCanvas{height:180px;border:3px dashed #9acde9;background:#fff;border-radius:18px;touch-action:none;display:block}
+#traceCanvas{width:100%;height:180px;border:3px dashed #9acde9;background:#fff;border-radius:18px;touch-action:none;display:block}
 </style></head>
 <body>
 <header><div class="faces">☀️ 🌈 ☁️</div><h1>نونویار</h1><p>بازی کن، بخند، یاد بگیر و ستاره بگیر!</p><div id="stars">⭐ ستاره‌های من: <b id="score">0</b></div></header>
@@ -62,10 +62,11 @@ footer{text-align:center;color:#315d61;font-size:12px;padding:20px 10px}
 <div class="feedback" id="letterQuizFeedback"></div>
 </div>
 <div class="letter-game">
-<h3>✍️ با انگشتت حرف را بنویس</h3>
-<p>روی نقطه‌ها حرکت کن و شکل حرف را بکش.</p>
+<h3>✍️ آموزش نوشتن حرف</h3>
+<p id="traceInstruction">اول به شکل حرف نگاه کن؛ از نقطه‌ی شروع حرکت کن و مسیر نقطه‌چین را با انگشت دنبال کن.</p>
+<div class="actions"><button class="primary" onclick="speakTraceInstruction()">🔊 راهنمای نوشتن</button><button onclick="showTraceGuide()">👀 دیدن الگو</button></div>
 <canvas id="traceCanvas" width="700" height="220" aria-label="محل تمرین نوشتن حرف"></canvas>
-<div class="actions"><button onclick="clearLetterTrace()">🧽 پاک کن</button><button class="primary" onclick="showTraceGuide()">نمایش دوباره نقطه‌ها</button></div>
+<div class="actions"><button onclick="clearLetterTrace()">🧽 پاک کن و دوباره بنویس</button></div><div class="feedback" id="traceFeedback">آماده‌ای؟ با انگشتت روی مسیر بکش! ✨</div>
 </div></div></section>
 <section id="numbers" class="hidden panel"><h2>⭐ چند تا ستاره می‌بینی؟</h2><div class="big" id="countStars">⭐⭐⭐</div><div class="actions" id="numberChoices"></div><div class="feedback" id="numberFeedback"></div><button class="primary" onclick="newNumber()">سؤال تازه</button></section>
 <section id="colors" class="hidden panel"><h2>🎨 رنگ درست را پیدا کن</h2><div class="big" id="colorTarget">🔴</div><div class="word" id="colorName">قرمز</div><div class="actions" id="colorChoices"></div><div class="feedback" id="colorFeedback"></div><button class="primary" onclick="newColor()">بازی تازه</button></section>
@@ -105,7 +106,7 @@ function showAlphabetPoem(){$('alphabetPoemText').textContent=alphabetPoems[poem
 function speakAlphabetPoem(){if(poemMode==='fa')speak(alphabetPoems.fa);else speakEnglish(alphabetPoems.en)}
 function setLetterMode(mode){letterMode=mode;li=0;exampleIndex=0;$('faLettersBtn').className=mode==='fa'?'primary':'';$('enLettersBtn').className=mode==='en'?'primary':'';showLetter()}
 function currentLetterData(){return letterMode==='fa'?letters[li]:englishLetters[li]}
-function showLetter(){const x=currentLetterData();exampleIndex=0;if(letterMode==='fa'){$('letter').textContent=x[0];$('letterWord').textContent=x[0]+' مثل '+x[1][0];$('letterHint').textContent='الفبای فارسی · حرف '+(li+1)+' از '+letters.length;$('repeatPrompt').textContent='حالا تو بگو! اسم این کلمه چیه؟'}else{$('letter').textContent=x[0]+'  '+x[1];$('letterWord').textContent=x[0]+' is for '+x[2][0];$('letterHint').textContent='English ABC · Letter '+(li+1)+' of '+englishLetters.length;$('repeatPrompt').textContent='Now you say it! What is this word?'}showExamples();$('repeatFeedback').textContent='';newLetterQuiz();showTraceGuide()}
+function showLetter(){const x=currentLetterData();exampleIndex=0;if(letterMode==='fa'){$('letter').textContent=x[0];$('letterWord').textContent=x[0]+' مثل '+x[1][0];$('letterHint').textContent='الفبای فارسی · حرف '+(li+1)+' از '+letters.length;$('repeatPrompt').textContent='حالا تو بگو! اسم این کلمه چیه؟'}else{$('letter').textContent=x[0]+'  '+x[1];$('letterWord').textContent=x[0]+' is for '+x[2][0];$('letterHint').textContent='English ABC · Letter '+(li+1)+' of '+englishLetters.length;$('repeatPrompt').textContent='Now you say it! What is this word?'}showExamples();$('repeatFeedback').textContent='';newLetterQuiz();traceAwarded=false;showTraceGuide()}
 function showExamples(){$('letterExamples').textContent=currentLetterData()[letterMode==='fa'?1:2].join('   •   ')}
 function nextExample(){const list=currentLetterData()[letterMode==='fa'?1:2];exampleIndex=(exampleIndex+1)%list.length;const word=list[exampleIndex].split(' ')[0];$('letterWord').textContent=letterMode==='fa'?currentLetterData()[0]+' مثل '+list[exampleIndex]:currentLetterData()[0]+' is for '+list[exampleIndex];$('repeatFeedback').textContent='حالا اسم این یکی را بگو!'}
 function nextLetter(){const arr=letterMode==='fa'?letters:englishLetters;li=(li+1)%arr.length;showLetter()}
@@ -127,13 +128,15 @@ function newLetterQuiz(){
  $('letterQuizChoices').innerHTML='';
  choices.forEach(word=>{const b=document.createElement('button');b.type='button';b.textContent=word;b.onclick=()=>{if(letterQuizSolved)return;if(word===correct){letterQuizSolved=true;$('letterQuizFeedback').textContent='آفرین! درست پیدا کردی! ⭐';$('letterQuizChoices').querySelectorAll('button').forEach(x=>x.disabled=true);reward()}else{$('letterQuizFeedback').textContent='نزدیک بود! دوباره نگاه کن و تلاش کن 💛';speak(letterMode==='fa'?'دوباره امتحان کن':'Try again')}};$('letterQuizChoices').append(b)})
 }
-const traceCanvas=$('traceCanvas'),traceCtx=traceCanvas.getContext('2d');let tracing=false;
-function showTraceGuide(){if(!traceCanvas)return;traceCtx.clearRect(0,0,traceCanvas.width,traceCanvas.height);traceCtx.save();traceCtx.font='bold 150px Tahoma, Arial';traceCtx.textAlign='center';traceCtx.textBaseline='middle';traceCtx.fillStyle='#d5d5e6';traceCtx.fillText(currentLetterData()[0],traceCanvas.width/2,traceCanvas.height/2+5);traceCtx.restore()}
-function clearLetterTrace(){if(!traceCanvas)return;traceCtx.clearRect(0,0,traceCanvas.width,traceCanvas.height)}
+const traceCanvas=$('traceCanvas'),traceCtx=traceCanvas.getContext('2d');let tracing=false,traceDistance=0,traceAwarded=false;
+function showTraceGuide(){if(!traceCanvas)return;traceCtx.clearRect(0,0,traceCanvas.width,traceCanvas.height);traceCtx.save();traceCtx.font=letterMode==='en'?'bold 145px Arial':'bold 150px Tahoma, Arial';traceCtx.textAlign='center';traceCtx.textBaseline='middle';traceCtx.lineWidth=5;traceCtx.setLineDash([3,10]);traceCtx.lineCap='round';traceCtx.strokeStyle='#b8b8d2';traceCtx.strokeText(currentLetterData()[0],traceCanvas.width/2,traceCanvas.height/2+5);traceCtx.setLineDash([]);traceCtx.fillStyle='#f3f0fa';traceCtx.fillText(currentLetterData()[0],traceCanvas.width/2,traceCanvas.height/2+5);traceCtx.beginPath();traceCtx.arc(letterMode==='fa'?traceCanvas.width*.68:traceCanvas.width*.32,traceCanvas.height*.23,12,0,Math.PI*2);traceCtx.fillStyle='#ff9b42';traceCtx.fill();traceCtx.restore();$('traceFeedback').textContent='از نقطه‌ی نارنجی شروع کن و مسیر کم‌رنگ را دنبال کن 🌟'}
+function speakTraceInstruction(){const t=letterMode==='fa'?'از نقطه نارنجی شروع کن. با انگشتت روی مسیر نقطه چین حرکت کن. بعد پاک کن و دوباره تمرین کن.':'Start at the orange dot. Trace the dotted letter with your finger. You can clear and try again.';letterMode==='fa'?speak(t):speakEnglish(t)}
+function clearLetterTrace(){if(!traceCanvas)return;traceCtx.clearRect(0,0,traceCanvas.width,traceCanvas.height);traceDistance=0;showTraceGuide()}
 function tracePosition(e){const r=traceCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)*traceCanvas.width/r.width,y:(e.clientY-r.top)*traceCanvas.height/r.height}}
-traceCanvas.addEventListener('pointerdown',e=>{tracing=true;traceCanvas.setPointerCapture(e.pointerId);const p=tracePosition(e);traceCtx.beginPath();traceCtx.moveTo(p.x,p.y)});
-traceCanvas.addEventListener('pointermove',e=>{if(!tracing)return;const p=tracePosition(e);traceCtx.lineWidth=11;traceCtx.lineCap='round';traceCtx.lineJoin='round';traceCtx.strokeStyle='#7650c8';traceCtx.lineTo(p.x,p.y);traceCtx.stroke()});
-['pointerup','pointercancel','lostpointercapture'].forEach(ev=>traceCanvas.addEventListener(ev,()=>{tracing=false}));
+traceCanvas.addEventListener('pointerdown',e=>{tracing=true;traceDistance=0;traceCanvas.setPointerCapture(e.pointerId);const p=tracePosition(e);traceCtx.beginPath();traceCtx.moveTo(p.x,p.y)});
+traceCanvas.addEventListener('pointermove',e=>{if(!tracing)return;const p=tracePosition(e);traceDistance+=Math.hypot(p.x-(traceCtx.lastX||p.x),p.y-(traceCtx.lastY||p.y));traceCtx.lastX=p.x;traceCtx.lastY=p.y;traceCtx.lineWidth=11;traceCtx.lineCap='round';traceCtx.lineJoin='round';traceCtx.strokeStyle='#7650c8';traceCtx.lineTo(p.x,p.y);traceCtx.stroke()});
+function finishTrace(){if(!tracing)return;tracing=false;traceCtx.lastX=null;traceCtx.lastY=null;if(traceDistance>110&&!traceAwarded){traceAwarded=true;$('traceFeedback').textContent='آفرین! یک بار حرف را تمرین کردی! ⭐';reward()}else if(traceDistance<=110){$('traceFeedback').textContent='کمی بیشتر روی مسیر حرکت کن؛ تو می‌تونی! 💛'}}
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>traceCanvas.addEventListener(ev,finishTrace));
 function speakEnglish(t){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.72;speechSynthesis.speak(u)}
 
 let n=3;function newNumber(){n=1+Math.floor(Math.random()*10);$('countStars').textContent='⭐'.repeat(n);$('numberFeedback').textContent='';$('numberChoices').innerHTML='';[n,Math.max(1,n-1),Math.min(10,n+1)].sort(()=>Math.random()-.5).forEach(v=>{let b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>{if(v===n){$('numberFeedback').textContent='آفرین! درست گفتی 🌟';$('numberChoices').querySelectorAll('button').forEach(x=>x.disabled=true);reward()}else{$('numberFeedback').textContent='یک بار دیگر بشمار عزیزم';speak('دوباره بشمار')}};$('numberChoices').append(b)})}
