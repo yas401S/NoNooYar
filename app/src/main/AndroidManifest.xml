@@ -2,6 +2,8 @@
     <application
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:label="یاسین‌لند"
+        android:icon="@drawable/yasinland_launcher"
+        android:roundIcon="@drawable/yasinland_launcher"
         android:usesCleartextTraffic="false"
         android:allowBackup="true"
         android:supportsRtl="true">
