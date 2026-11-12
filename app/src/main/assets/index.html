@@ -698,5 +698,6 @@ function toggleLandMusic(){
  if(landMusicOn){landMusicOn=false;clearInterval(landMusicTimer);if(landAudio)landAudio.suspend();document.getElementById('musicStartBtn').textContent='▶️ پخش دوباره آهنگ';document.getElementById('musicMuteBtn').textContent='🔈 آهنگ خاموش است'}
  else startLandMusic();
 }
-// Try to start the original welcome tune as soon as the first screen loads.\nwindow.addEventListener('load',()=>{setTimeout(()=>{try{startLandMusic()}catch(e){}},350)});
+// Try to start the original welcome tune as soon as the first screen loads.
+window.addEventListener('load',()=>{setTimeout(()=>{try{startLandMusic()}catch(e){}},350)});
 </script></body></html>
