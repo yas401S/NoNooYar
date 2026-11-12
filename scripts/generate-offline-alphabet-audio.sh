@@ -1,74 +1,63 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
 ROOT="app/src/main/assets/voices"
-mkdir -p "$ROOT" /tmp/yasin-alphabet-audio
-
-# Persian letter-name recordings from Wikimedia Commons (Roozitaa, CC BY-SA 4.0).
-download_pids=()
-while IFS='|' read -r number source; do
-  [ -n "$number" ] || continue
-  (
-    curl -L --connect-timeout 15 --max-time 90 --retry 2 --fail --silent --show-error \
-      "https://commons.wikimedia.org/wiki/Special:Redirect/file/${source}" \
-      -o "$ROOT/fa-letter-${number}.ogg"
-    test -s "$ROOT/fa-letter-${number}.ogg"
-  ) &
-  download_pids+=("$!")
-  if [ "${#download_pids[@]}" -ge 8 ]; then
-    for pid in "${download_pids[@]}"; do wait "$pid"; done
-    download_pids=()
-  fi
-done <<'FILES'
-01|1-alef.ogg
-02|2-be.ogg
-03|3-pe.ogg
-04|4-te.ogg
-05|5-se.ogg
-06|6-jim.ogg
-07|7-che.ogg
-08|8-he.ogg
-09|9-khe.ogg
-10|10-dal.ogg
-11|11-zal.ogg
-12|12-re.ogg
-13|13-ze.ogg
-14|14-zhe.ogg
-15|15-sin.ogg
-16|16-shin.ogg
-17|17-sad.ogg
-18|18-zad.ogg
-19|19-ta.ogg
-20|20-za.ogg
-21|21-ein.ogg
-22|22-ghin.ogg
-23|23-fe.ogg
-24|24-q%C4%81f.ogg
-25|25-k%C4%81f.ogg
-26|26-g%C4%81f.ogg
-27|27-lam.ogg
-28|28-m%C4%ABm.ogg
-29|29-n%C5%ABn.ogg
-30|30-v%C4%81v.ogg
-31|31-he.ogg
-32|32-ye.ogg
-FILES
-for pid in "${download_pids[@]}"; do wait "$pid"; done
+TMP="/tmp/yasin-alphabet-audio"
+mkdir -p "$ROOT" "$TMP"
 
 make_mp3() {
   local voice="$1" text="$2" output="$3" wav
-  wav="/tmp/yasin-alphabet-audio/$(basename "$output" .mp3).wav"
+  wav="$TMP/$(basename "$output" .mp3).wav"
   espeak-ng -v "$voice" -s 136 -p 54 -a 175 -w "$wav" "$text"
   ffmpeg -hide_banner -loglevel error -y -i "$wav" -ac 1 -ar 24000 -codec:a libmp3lame -b:a 48k "$output"
   rm -f "$wav"
   test -s "$output"
 }
 
-# Each lesson has a separate letter-name track and three independently playable example words.
+# All alphabet tracks are generated at build time and bundled in the APK.
+# No phone speech engine, network access, or runtime download is required.
+while IFS='|' read -r number spoken; do
+  [ -n "$number" ] || continue
+  make_mp3 "fa" "$spoken" "$ROOT/fa-letter-$number.mp3"
+done <<'FALETTERS'
+01|آ
+02|الف
+03|ب
+04|پ
+05|ت
+06|ث
+07|جیم
+08|چ
+09|ح
+10|خ
+11|دال
+12|ذال
+13|ر
+14|ز
+15|ژ
+16|سین
+17|شین
+18|صاد
+19|ضاد
+20|طا
+21|ظا
+22|عین
+23|غین
+24|فا
+25|قاف
+26|کاف
+27|گاف
+28|لام
+29|میم
+30|نون
+31|واو
+32|ه
+33|یا
+FALETTERS
+
 while IFS='|' read -r number letter; do
   [ -n "$number" ] || continue
   make_mp3 "en-us+f3" "$letter" "$ROOT/en-letter-$number.mp3"
-done <<'LETTERS'
+done <<'ENLETTERS'
 01|A
 02|B
 03|C
@@ -95,7 +84,7 @@ done <<'LETTERS'
 24|X
 25|Y
 26|Z
-LETTERS
+ENLETTERS
 
 while IFS='|' read -r number w1 w2 w3; do
   [ -n "$number" ] || continue
@@ -174,21 +163,16 @@ ENWORDS
 
 make_mp3 "fa" "آ مثل آسمان آبی، ا مثل انار دونه‌دونه؛ ب مثل بابای خوبم، پ مثل پروانه توی خونه؛ ت مثل توپ گرد و تند، ث مثل ثریا توی آسمون؛ ج مثل جوجه‌ی زرد، چ مثل چتر توی بارون؛ ح مثل حباب و خنده، خ مثل خرگوش بازیگوش؛ د مثل درخت سبز، ذ مثل ذرت خوشمزه؛ ر مثل رنگین‌کمان، ز مثل زنبور عسل؛ ژ مثل ژاکت گرم، س مثل سیب خوشگل؛ ش مثل شیر جنگل، ص مثل صابون و پاکی؛ ض مثل ضربان قلب، ط مثل طوطی رنگی؛ ظ مثل ظرف غذا، ع مثل عسل شیرین؛ غ مثل غنچه‌ی گل، ف مثل فیل نازنین؛ ق مثل قلم و کاغذ، ک مثل کتاب قصه؛ گ مثل گل توی باغچه، ل مثل لاله؛ م مثل ماه شب‌ها، ن مثل نان تازه؛ و مثل ورزش و شادی، ه مثل هوای تازه؛ ی مثل یاس خوش‌بو، الفبا شد تموم؛ دست بزن و شاد بخون، آفرین به تو گل من!" "$ROOT/fa-alphabet-poem.mp3"
 make_mp3 "en-us+f3" "A is for Apple, red and sweet; B is for Ball, bounce to the beat! C is for Cat and D is for Dog; E is for Elephant, big as a log. F is for Fish and G is for Goat; H is for House and I is for Ice cream! J is for Juice and K is for Kite; L is for Lion, roaring with might. M is for Moon and N is for Nest; O is for Orange, juicy and fresh! P is for Pencil and Q is for Queen; R is for Rainbow, colorful and clean. S is for Sun and T is for Tree; U is Umbrella, come sing with me! V is for Van and W is for Whale; X is Xylophone, music we hail! Y is for Yo-yo and Z is for Zebra; now we know our ABC, hooray together!" "$ROOT/en-alphabet-poem.mp3"
+
 cat > "$ROOT/ATTRIBUTION.txt" <<'NOTICE'
-OFFLINE ALPHABET AUDIO CREDITS
+OFFLINE ALPHABET AUDIO
 
-Persian letter-name recordings:
-Files fa-letter-01.ogg through fa-letter-32.ogg
-Creator: Roozitaa
-Source: Wikimedia Commons, Category:Audio files of Persian alphabet
-https://commons.wikimedia.org/wiki/Category:Audio_files_of_Persian_alphabet
-License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-https://creativecommons.org/licenses/by-sa/4.0/
-The recordings are included unchanged. Please retain this attribution and license notice.
+All alphabet letter names, example words, and alphabet rhymes are generated during the build with eSpeak NG voices.
+Persian voice: fa
+English voice: en-us+f3
+Project and licensing information: https://github.com/espeak-ng/espeak-ng
 
-Persian and English example-word clips, and English letter-name clips:
-Generated during the Android build with eSpeak NG voices (fa and en-us+f3).
-eSpeak NG project: https://github.com/espeak-ng/espeak-ng
+Audio is bundled into the APK. Alphabet lessons do not use the Android phone speech engine and do not need internet at runtime.
 NOTICE
 
 echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
