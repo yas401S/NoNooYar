@@ -198,6 +198,3 @@ exec 3>&-
 wait "$TTS_PID"
 rm -f "$FIFO"
 echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
-wait "$TTS_PID"
-rm -f "$FIFO"
-echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
