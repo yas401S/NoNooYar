@@ -90,11 +90,6 @@ while IFS='|' read -r number w1 w2 w3; do
   [ -n "$number" ] || continue
   make_mp3 "fa" "$w1، $w2، $w3" "$ROOT/fa-words-$number.mp3"
 done <<'FAWORDS'
-  [ -n "$number" ] || continue
-  make_mp3 "fa" "$w1" "$ROOT/fa-word-$number-01.mp3"
-  make_mp3 "fa" "$w2" "$ROOT/fa-word-$number-02.mp3"
-  make_mp3 "fa" "$w3" "$ROOT/fa-word-$number-03.mp3"
-done <<'FAWORDS'
 01|آسمان|آهو|آتش
 02|انار|اسب|ابر
 03|بابا|باران|بادبادک
@@ -133,11 +128,6 @@ FAWORDS
 while IFS='|' read -r number w1 w2 w3; do
   [ -n "$number" ] || continue
   make_mp3 "en-us+f3" "$w1, $w2, $w3" "$ROOT/en-words-$number.mp3"
-done <<'ENWORDS'
-  [ -n "$number" ] || continue
-  make_mp3 "en-us+f3" "$w1" "$ROOT/en-word-$number-01.mp3"
-  make_mp3 "en-us+f3" "$w2" "$ROOT/en-word-$number-02.mp3"
-  make_mp3 "en-us+f3" "$w3" "$ROOT/en-word-$number-03.mp3"
 done <<'ENWORDS'
 01|Apple|Ant|Airplane
 02|Ball|Bear|Banana
