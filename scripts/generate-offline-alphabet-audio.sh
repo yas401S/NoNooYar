@@ -17,7 +17,7 @@ make_mp3() {
     # Reuse one loaded neural Persian model for all clips.
     err="$wav.error"
     rm -f "$wav" "$err"
-    printf '%s\\t%s\\n' "$wav" "$text" >&3
+    printf '%s\t%s\n' "$wav" "$text" >&3
     for _ in $(seq 1 600); do
       [ -s "$wav" ] && break
       if [ -f "$err" ]; then cat "$err" >&2; exit 1; fi
