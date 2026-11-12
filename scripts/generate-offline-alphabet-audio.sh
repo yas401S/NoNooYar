@@ -7,8 +7,14 @@ mkdir -p "$ROOT" "$TMP"
 make_mp3() {
   local voice="$1" text="$2" output="$3" wav
   wav="$TMP/$(basename "$output" .mp3).wav"
-  espeak-ng -v "$voice" -s 136 -p 54 -a 175 -w "$wav" "$text"
-  ffmpeg -hide_banner -loglevel error -y -i "$wav" -ac 1 -ar 24000 -codec:a libmp3lame -b:a 48k "$output"
+  if [ "$voice" = "fa" ]; then
+    # Natural neural Persian voice (Mana-Persian-Piper), generated at build time.
+    speech "$text" "$wav"
+  else
+    # English alphabet support remains local and bundled as audio.
+    espeak-ng -v "$voice" -s 136 -p 54 -a 175 -w "$wav" "$text"
+  fi
+  ffmpeg -hide_banner -loglevel error -y -i "$wav" -ac 1 -ar 24000 -codec:a libmp3lame -b:a 64k "$output"
   rm -f "$wav"
   test -s "$output"
 }
@@ -20,20 +26,20 @@ while IFS='|' read -r number spoken; do
   make_mp3 "fa" "$spoken" "$ROOT/fa-letter-$number.mp3"
 done <<'FALETTERS'
 01|آ
-02|الف
-03|ب
-04|پ
-05|ت
-06|ث
+02|اَلِف
+03|بِ
+04|پِ
+05|تِ
+06|ثِ
 07|جیم
-08|چ
-09|ح
-10|خ
+08|چِ
+09|حِ
+10|خِ
 11|دال
 12|ذال
-13|ر
-14|ز
-15|ژ
+13|رِ
+14|زِ
+15|ژِ
 16|سین
 17|شین
 18|صاد
@@ -42,16 +48,16 @@ done <<'FALETTERS'
 21|ظا
 22|عین
 23|غین
-24|فا
+24|فِ
 25|قاف
-26|کاف
-27|گاف
+26|کِ
+27|گِ
 28|لام
-29|میم
-30|نون
+29|مِ
+30|نِ
 31|واو
-32|ه
-33|یا
+32|هِ
+33|یِ
 FALETTERS
 
 while IFS='|' read -r number letter; do
@@ -163,12 +169,12 @@ make_mp3 "en-us+f3" "A is for Apple, red and sweet; B is for Ball, bounce to the
 cat > "$ROOT/ATTRIBUTION.txt" <<'NOTICE'
 OFFLINE ALPHABET AUDIO
 
-All alphabet letter names, example words, and alphabet rhymes are generated during the build with eSpeak NG voices.
-Persian voice: fa
-English voice: en-us+f3
+Persian alphabet names, example words, and Persian alphabet rhyme are generated during the build with Mana-Persian-Piper through persian-speech. English alphabet audio is generated with eSpeak NG.
+Persian voice: Mana-Persian-Piper neural voice (generated with persian-speech)
+English voice: en-us+f3 (eSpeak NG)
 Project and licensing information: https://github.com/espeak-ng/espeak-ng
 
-Audio is bundled into the APK. Alphabet lessons do not use the Android phone speech engine and do not need internet at runtime.
+Audio is bundled into the APK. Alphabet lessons do not use the Android phone speech engine and do not need internet at runtime. Persian audio uses a neural voice trained on the CC0 Mana-TTS Persian speech dataset.
 NOTICE
 
 echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
