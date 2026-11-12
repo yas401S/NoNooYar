@@ -283,11 +283,7 @@ function playOfflineAlphabetSequence(paths){
  };
  status.textContent='🎧 گوش کن...';playNext();
 }
-function alphabetLetterAudioPath(){
- const number=String(li+1).padStart(2,'0');
- if(letterMode==='fa'){const recordedNumber=li<2?'01':String(li).padStart(2,'0');return 'voices/fa-letter-'+recordedNumber+'.ogg'}
- return 'voices/en-letter-'+number+'.mp3';
-}
+function alphabetLetterAudioPath(){const number=String(li+1).padStart(2,'0');return 'voices/'+(letterMode==='fa'?'fa':'en')+'-letter-'+number+'.mp3'}
 function alphabetWordAudioPath(){const number=String(li+1).padStart(2,'0');const example=String(exampleIndex+1).padStart(2,'0');return 'voices/'+(letterMode==='fa'?'fa':'en')+'-word-'+number+'-'+example+'.mp3'}
 function listenLetterLesson(){playOfflineAlphabetSequence([alphabetLetterAudioPath(),alphabetWordAudioPath()])}
 function showExamples(){$('letterExamples').textContent=currentLetterData()[letterMode==='fa'?1:2].join('   •   ')}
