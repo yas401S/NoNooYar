@@ -268,7 +268,8 @@ function showAlphabetPoem(){$('alphabetPoemText').textContent=alphabetPoems[poem
 function speakAlphabetPoem(){playOfflineAlphabetSequence(['voices/'+(poemMode==='fa'?'fa':'en')+'-alphabet-poem.mp3'])}
 function setLetterMode(mode){letterMode=mode;li=0;exampleIndex=0;$('faLettersBtn').className=mode==='fa'?'primary':'';$('enLettersBtn').className=mode==='en'?'primary':'';showLetter()}
 function currentLetterData(){return letterMode==='fa'?letters[li]:englishLetters[li]}
-function showLetter(){stopAlphabetAudio();const x=currentLetterData();exampleIndex=0;const item=(letterMode==='fa'?x[1]:x[2])[0];$('letter').textContent=letterMode==='fa'?x[0]:x[0]+'  '+x[1];$('letterWord').textContent=letterMode==='fa'?x[0]+' مثل '+item.replace(/\\s*[\\p{Extended_Pictographic}].*$/u,''):x[0]+' is for '+item.replace(/\\s*[\\p{Extended_Pictographic}].*$/u,'');const em=item.match(/[\\p{Extended_Pictographic}]/u);$('letterPicture').textContent=em?em[0]:'🌟';$('letterHint').textContent=letterMode==='fa'?'حرف '+(li+1)+' از '+letters.length:'Letter '+(li+1)+' of '+englishLetters.length;$('repeatPrompt').textContent=letterMode==='fa'?'حالا تو بگو! اسم این کلمه چیه؟':'Now you say it!';showExamples();$('repeatFeedback').textContent='';newLetterQuiz();traceAwarded=false;showTraceGuide()}\nfunction stopAlphabetAudio(){try{if(window._alphabetAudio){window._alphabetAudio.pause();window._alphabetAudio.currentTime=0;window._alphabetAudio=null}}catch(e){}}
+function showLetter(){stopAlphabetAudio();const x=currentLetterData();exampleIndex=0;const item=(letterMode==='fa'?x[1]:x[2])[0];$('letter').textContent=letterMode==='fa'?x[0]:x[0]+'  '+x[1];$('letterWord').textContent=letterMode==='fa'?x[0]+' مثل '+item.replace(/\s*[\p{Extended_Pictographic}].*$/u,''):x[0]+' is for '+item.replace(/\s*[\p{Extended_Pictographic}].*$/u,'');const em=item.match(/[\p{Extended_Pictographic}]/u);$('letterPicture').textContent=em?em[0]:'🌟';$('letterHint').textContent=letterMode==='fa'?'حرف '+(li+1)+' از '+letters.length:'Letter '+(li+1)+' of '+englishLetters.length;$('repeatPrompt').textContent=letterMode==='fa'?'حالا تو بگو! اسم این کلمه چیه؟':'Now you say it!';showExamples();$('repeatFeedback').textContent='';newLetterQuiz();traceAwarded=false;showTraceGuide()}
+function stopAlphabetAudio(){try{if(window._alphabetAudio){window._alphabetAudio.pause();window._alphabetAudio.currentTime=0;window._alphabetAudio=null}}catch(e){}}
 function playOfflineAlphabetSequence(paths){
  stopAlphabetAudio();
  const status=$('repeatFeedback');
@@ -276,29 +277,18 @@ function playOfflineAlphabetSequence(paths){
  const playNext=()=>{
   if(index>=paths.length){status.textContent='آفرین! حالا تو هم بلند تکرار کن 🌟';return}
   const audio=new Audio(paths[index++]);
-  window._alphabetAudio=audio;
-  audio.preload='auto';
-  audio.onended=playNext;
-  audio.onerror=()=>{status.textContent='صدای این درس بارگذاری نشد. یک بار برنامه را ببند و دوباره باز کن.';window._alphabetAudio=null};
-  const started=audio.play();
-  if(started&&typeof started.catch==='function')started.catch(()=>{status.textContent='پخش صدای آفلاین انجام نشد.';window._alphabetAudio=null});
+  window._alphabetAudio=audio;audio.preload='auto';audio.onended=playNext;
+  audio.onerror=()=>{status.textContent='صدای این درس بارگذاری نشد. برنامه را یک بار ببند و دوباره باز کن.';window._alphabetAudio=null};
+  const started=audio.play();if(started&&typeof started.catch==='function')started.catch(()=>{status.textContent='پخش صدای آفلاین انجام نشد.';window._alphabetAudio=null});
  };
- status.textContent='🎧 گوش کن...';
- playNext();
+ status.textContent='🎧 گوش کن...';playNext();
 }
 function alphabetLetterAudioPath(){
  const number=String(li+1).padStart(2,'0');
- if(letterMode==='fa'){
-  const recordedNumber=li<2?'01':String(li).padStart(2,'0');
-  return 'voices/fa-letter-'+recordedNumber+'.ogg';
- }
+ if(letterMode==='fa'){const recordedNumber=li<2?'01':String(li).padStart(2,'0');return 'voices/fa-letter-'+recordedNumber+'.ogg'}
  return 'voices/en-letter-'+number+'.mp3';
 }
-function alphabetWordAudioPath(){
- const number=String(li+1).padStart(2,'0');
- const example=String(exampleIndex+1).padStart(2,'0');
- return 'voices/'+(letterMode==='fa'?'fa':'en')+'-word-'+number+'-'+example+'.mp3';
-}
+function alphabetWordAudioPath(){const number=String(li+1).padStart(2,'0');const example=String(exampleIndex+1).padStart(2,'0');return 'voices/'+(letterMode==='fa'?'fa':'en')+'-word-'+number+'-'+example+'.mp3'}
 function listenLetterLesson(){playOfflineAlphabetSequence([alphabetLetterAudioPath(),alphabetWordAudioPath()])}
 function showExamples(){$('letterExamples').textContent=currentLetterData()[letterMode==='fa'?1:2].join('   •   ')}
 function nextExample(){stopAlphabetAudio();const list=currentLetterData()[letterMode==='fa'?1:2];exampleIndex=(exampleIndex+1)%list.length;const word=list[exampleIndex].split(' ')[0];$('letterWord').textContent=letterMode==='fa'?currentLetterData()[0]+' مثل '+list[exampleIndex]:currentLetterData()[0]+' is for '+list[exampleIndex];$('repeatFeedback').textContent='حالا اسم این یکی را بگو!'}
@@ -306,12 +296,6 @@ function nextLetter(){stopAlphabetAudio();const arr=letterMode==='fa'?letters:en
 function prevLetter(){stopAlphabetAudio();const arr=letterMode==='fa'?letters:englishLetters;li=(li-1+arr.length)%arr.length;showLetter()}
 function sayLetter(){playOfflineAlphabetSequence([alphabetLetterAudioPath()])}
 function speakLetterExample(){playOfflineAlphabetSequence([alphabetWordAudioPath()])}
-function showExamples(){$('letterExamples').textContent=currentLetterData()[letterMode==='fa'?1:2].join('   •   ')}
-function nextExample(){const list=currentLetterData()[letterMode==='fa'?1:2];exampleIndex=(exampleIndex+1)%list.length;const word=list[exampleIndex].split(' ')[0];$('letterWord').textContent=letterMode==='fa'?currentLetterData()[0]+' مثل '+list[exampleIndex]:currentLetterData()[0]+' is for '+list[exampleIndex];$('repeatFeedback').textContent='حالا اسم این یکی را بگو!'}
-function nextLetter(){const arr=letterMode==='fa'?letters:englishLetters;li=(li+1)%arr.length;showLetter()}
-function prevLetter(){const arr=letterMode==='fa'?letters:englishLetters;li=(li+arr.length-1)%arr.length;showLetter()}
-function sayLetter(){if(letterMode==='fa')speak(letters[li][0]);else speakEnglish(englishLetters[li][0])}
-function speakLetterExample(){const list=currentLetterData()[letterMode==='fa'?1:2];const word=list[exampleIndex].split(' ')[0];if(letterMode==='fa')speak(word);else speakEnglish(word)}
 function startLetterRepeat(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){$('repeatFeedback').textContent='میکروفون این گوشی پشتیبانی نمی‌شود؛ بلند تکرار کن و دکمه «گفتم» را بزن 💛';return}const rec=new SR();rec.lang=letterMode==='fa'?'fa-IR':'en-US';rec.interimResults=false;rec.maxAlternatives=1;$('repeatFeedback').textContent='دارم گوش می‌دم... 🎧';rec.onresult=e=>{const said=e.results[0][0].transcript.toLowerCase();const expected=currentLetterData()[letterMode==='fa'?1:2][exampleIndex].split(' ')[0].toLowerCase();$('repeatFeedback').textContent=(said.includes(expected)||expected.includes(said))?'آفرین! خیلی خوب گفتی! ⭐':'آفرین که تلاش کردی! یک بار دیگر گوش کن و تکرار کن 💕'};rec.onerror=()=>{$('repeatFeedback').textContent='صدات واضح نبود؛ دوباره بگو یا دکمه «گفتم» را بزن'};rec.start()}
 function manualRepeat(){stopAlphabetAudio();$('repeatFeedback').textContent='آفرین قهرمان! 👏 حالا کلمه بعدی را هم بگو.'}
 
@@ -714,4 +698,5 @@ function toggleLandMusic(){
  if(landMusicOn){landMusicOn=false;clearInterval(landMusicTimer);if(landAudio)landAudio.suspend();document.getElementById('musicStartBtn').textContent='▶️ پخش دوباره آهنگ';document.getElementById('musicMuteBtn').textContent='🔈 آهنگ خاموش است'}
  else startLandMusic();
 }
-// Try to start the original welcome tune as soon as the first screen loads.\nwindow.addEventListener('load',()=>{setTimeout(()=>{try{startLandMusic()}catch(e){}},350)});\n</script></body></html>
+// Try to start the original welcome tune as soon as the first screen loads.\nwindow.addEventListener('load',()=>{setTimeout(()=>{try{startLandMusic()}catch(e){}},350)});
+</script></body></html>
