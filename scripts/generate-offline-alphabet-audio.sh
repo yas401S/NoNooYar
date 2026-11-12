@@ -194,4 +194,7 @@ Project and licensing information: https://github.com/espeak-ng/espeak-ng
 Audio is bundled into the APK. Alphabet lessons do not use the Android phone speech engine and do not need internet at runtime. Persian audio uses a neural voice trained on the CC0 Mana-TTS Persian speech dataset.
 NOTICE
 
-exec 3>&-\nwait "$TTS_PID"\nrm -f "$FIFO"\necho "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
+exec 3>&-
+wait "$TTS_PID"
+rm -f "$FIFO"
+echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
