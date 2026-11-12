@@ -383,7 +383,12 @@ function playAnimalSound(){
   speak(a.s);
  }
 }
-function readAnimalPoem(){stopAnimalAudio();speak(animalList[ai].p)}
+function makeAnimalDanceSong(a){
+ const moves={"گربه":"یواش و ناز بیا","سگ":"بدو بدو بیا","گاو":"آروم قدم بردار","گوسفند":"پشمالو و نرم بیا","شیر":"محکم پنجه بکوب","فیل":"خرطومتو تکون بده","خرگوش":"جست و خیز کن","قورباغه":"بپر توی برکه","مرغ":"بال‌هاتو وا کن","اردک":"مثل اردک راه برو","اسب":"چهار نعل بدو","خرس":"آروم تاب بخور","میمون":"از شاخه بالا برو","زرافه":"گردنتو بکش بالا","دلفین":"توی آب شیرجه بزن","پنگوئن":"تلوتلو راه برو"};
+ const move=moves[a.n]||"با شادی بازی کن";
+ return "آهای آهای "+a.n+" جون!\\n"+a.s+"، بخون بخون!\\n"+move+"، یک دو سه!\\n"+a.n+" دوست خوب همه!\\nدست بزن، پا بکوب، هورا!\\n"+a.n+" رو دوست داریم، بیا!";
+}
+function readAnimalPoem(){stopAnimalAudio();speak(makeAnimalDanceSong(animalList[ai]))}
 function stopAnimalAudio(){if(currentAnimalAudio){currentAnimalAudio.pause();currentAnimalAudio.currentTime=0;currentAnimalAudio=null}if('speechSynthesis'in window)speechSynthesis.cancel()}
 const animalQuizPool=animals.filter(a=>!!animalSoundFiles[a.n]);
 let animalQuizTarget=null,animalQuizScore=0,animalQuizAnswered=false,animalQuizLast='';
@@ -606,7 +611,15 @@ let fruitIndex=0;
 function stopFruitVoice(){if('speechSynthesis'in window)speechSynthesis.cancel()}
 function renderFruit(){const f=fruits[fruitIndex];$('fruitEmoji').textContent=f[0];$('fruitName').textContent=f[1]+' · '+f[2];$('fruitFact').textContent='🇮🇷 '+f[3]+'\n🇬🇧 '+f[4];$('fruitPoem').textContent='🇮🇷 '+f[5]+'\n\n🇬🇧 '+f[6];$('fruitCounter').textContent=(fruitIndex+1)+' از '+fruits.length;$('fruitStatus').textContent='میوه‌ی '+f[1]+' را یاد بگیریم!'}
 function speakFruit(lang){const f=fruits[fruitIndex];stopFruitVoice();const u=new SpeechSynthesisUtterance(lang==='en'?f[4]:f[1]+'. '+f[3]);u.lang=lang==='en'?'en-US':'fa-IR';u.rate=.82;u.pitch=1.08;speechSynthesis.speak(u);$('fruitStatus').textContent=lang==='en'?'🇬🇧 English introduction: '+f[2]:'🇮🇷 معرفی فارسی: '+f[1]}
-function speakFruitPoem(lang){const f=fruits[fruitIndex];stopFruitVoice();const u=new SpeechSynthesisUtterance(lang==='en'?f[6]:f[5]);u.lang=lang==='en'?'en-US':'fa-IR';u.rate=.78;u.pitch=1.12;speechSynthesis.speak(u);$('fruitStatus').textContent=lang==='en'?'🎶 English rhyme':'🎵 شعر فارسی'}
+function makeFruitDanceSong(f){
+ const patterns=[
+ "کیه کیه توی سبد؟\\n"+f[1]+" خوشگل و خوش‌مزه‌ست!\\nدست بزن، یک گاز کوچولو\\nبچرخ و بخند، ای نازنین!",
+ "هی هی هی، هورا هورا!\\n"+f[1]+" اومده از راه!\\nبوش کن و اسمشو بگو\\nبپر بالا، بخند با ما!",
+ "یک دونه این‌ور، دو تا اون‌ور\\n"+f[1]+" رو پیدا کن دختر/پسر!\\nبشمار و بخند، یک دو سه\\nمیوه‌ی خوشمزه، آفرین به تو!"
+ ];
+ return patterns[fruitIndex%patterns.length];
+}
+function speakFruitPoem(lang){const f=fruits[fruitIndex];stopFruitVoice();const u=new SpeechSynthesisUtterance(lang==='en'?f[6]:makeFruitDanceSong(f));u.lang=lang==='en'?'en-US':'fa-IR';u.rate=lang==='en'?.9:1.02;u.pitch=lang==='en'?1.15:1.28;speechSynthesis.speak(u);$('fruitStatus').textContent=lang==='en'?'🎶 English rhyme':'🎵 ترانه‌ی شاد میوه‌ها؛ دست بزن و بخون!'}
 function nextFruit(){stopFruitVoice();fruitIndex=(fruitIndex+1)%fruits.length;renderFruit()}
 function prevFruit(){stopFruitVoice();fruitIndex=(fruitIndex-1+fruits.length)%fruits.length;renderFruit()}
 function randomFruit(){stopFruitVoice();fruitIndex=Math.floor(Math.random()*fruits.length);renderFruit()}
