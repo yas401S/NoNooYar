@@ -5,12 +5,20 @@ ROOT="app/src/main/assets/voices"
 mkdir -p "$ROOT" /tmp/yasin-alphabet-audio
 
 # Persian letter-name recordings from Wikimedia Commons (Roozitaa, CC BY-SA 4.0).
+download_pids=()
 while IFS='|' read -r number source; do
   [ -n "$number" ] || continue
-  curl -L --retry 3 --fail --silent --show-error \
-    "https://commons.wikimedia.org/wiki/Special:Redirect/file/${source}" \
-    -o "$ROOT/fa-letter-${number}.ogg"
-  test -s "$ROOT/fa-letter-${number}.ogg"
+  (
+    curl -L --connect-timeout 15 --max-time 90 --retry 2 --fail --silent --show-error \
+      "https://commons.wikimedia.org/wiki/Special:Redirect/file/${source}" \
+      -o "$ROOT/fa-letter-${number}.ogg"
+    test -s "$ROOT/fa-letter-${number}.ogg"
+  ) &
+  download_pids+=("$!")
+  if [ "${#download_pids[@]}" -ge 8 ]; then
+    for pid in "${download_pids[@]}"; do wait "$pid"; done
+    download_pids=()
+  fi
 done <<'FILES'
 01|1-alef.ogg
 02|2-be.ogg
@@ -45,6 +53,7 @@ done <<'FILES'
 31|31-he.ogg
 32|32-ye.ogg
 FILES
+for pid in "${download_pids[@]}"; do wait "$pid"; done
 
 make_mp3() {
   local voice="$1" text="$2" output="$3" wav
