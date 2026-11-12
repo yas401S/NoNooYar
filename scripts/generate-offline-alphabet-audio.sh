@@ -3,19 +3,33 @@ set -euo pipefail
 ROOT="app/src/main/assets/voices"
 TMP="/tmp/yasin-alphabet-audio"
 mkdir -p "$ROOT" "$TMP"
+FIFO="$TMP/persian-tts.fifo"
+rm -f "$FIFO"
+mkfifo "$FIFO"
+python scripts/persian-tts-worker.py < "$FIFO" &
+TTS_PID=$!
+exec 3>"$FIFO"
 
 make_mp3() {
-  local voice="$1" text="$2" output="$3" wav
+  local voice="$1" text="$2" output="$3" wav err
   wav="$TMP/$(basename "$output" .mp3).wav"
   if [ "$voice" = "fa" ]; then
-    # Natural neural Persian voice (Mana-Persian-Piper), generated at build time.
-    speech "$text" "$wav"
+    # Reuse one loaded neural Persian model for all clips.
+    err="$wav.error"
+    rm -f "$wav" "$err"
+    printf '%s\\t%s\\n' "$wav" "$text" >&3
+    for _ in $(seq 1 600); do
+      [ -s "$wav" ] && break
+      if [ -f "$err" ]; then cat "$err" >&2; exit 1; fi
+      sleep 0.1
+    done
+    [ -s "$wav" ] || { echo "Persian TTS timed out for: $text" >&2; exit 1; }
   else
     # English alphabet support remains local and bundled as audio.
     espeak-ng -v "$voice" -s 136 -p 54 -a 175 -w "$wav" "$text"
   fi
   ffmpeg -hide_banner -loglevel error -y -i "$wav" -ac 1 -ar 24000 -codec:a libmp3lame -b:a 64k "$output"
-  rm -f "$wav"
+  rm -f "$wav" "$wav.error"
   test -s "$output"
 }
 
@@ -177,4 +191,4 @@ Project and licensing information: https://github.com/espeak-ng/espeak-ng
 Audio is bundled into the APK. Alphabet lessons do not use the Android phone speech engine and do not need internet at runtime. Persian audio uses a neural voice trained on the CC0 Mana-TTS Persian speech dataset.
 NOTICE
 
-echo "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
+exec 3>&-\nwait "$TTS_PID"\nrm -f "$FIFO"\necho "Offline alphabet audio generated: $(find "$ROOT" -type f | wc -l) files"
