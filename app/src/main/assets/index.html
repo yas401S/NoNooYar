@@ -284,8 +284,8 @@ function playOfflineAlphabetSequence(paths){
  status.textContent='🎧 گوش کن...';playNext();
 }
 function alphabetLetterAudioPath(){const number=String(li+1).padStart(2,'0');return 'voices/'+(letterMode==='fa'?'fa':'en')+'-letter-'+number+'.mp3'}
-function alphabetWordAudioPath(){const number=String(li+1).padStart(2,'0');return 'voices/'+(letterMode==='fa'?'fa':'en')+'-words-'+number+'.mp3'}
-function listenLetterLesson(){playOfflineAlphabetSequence([alphabetLetterAudioPath(),alphabetWordAudioPath()])}
+function alphabetWordAudioPath(index=exampleIndex){const number=String(li+1).padStart(2,'0');return letterMode==='fa'?'voices/fa-word-'+number+'-'+(index+1)+'.mp3':'voices/en-words-'+number+'.mp3'}
+function listenLetterLesson(){const paths=[alphabetLetterAudioPath()];if(letterMode==='fa'){paths.push(alphabetWordAudioPath(0),alphabetWordAudioPath(1),alphabetWordAudioPath(2))}else{paths.push(alphabetWordAudioPath())}playOfflineAlphabetSequence(paths)}
 function showExamples(){$('letterExamples').textContent=currentLetterData()[letterMode==='fa'?1:2].join('   •   ')}
 function nextExample(){stopAlphabetAudio();const list=currentLetterData()[letterMode==='fa'?1:2];exampleIndex=(exampleIndex+1)%list.length;const word=list[exampleIndex].split(' ')[0];$('letterWord').textContent=letterMode==='fa'?currentLetterData()[0]+' مثل '+list[exampleIndex]:currentLetterData()[0]+' is for '+list[exampleIndex];$('repeatFeedback').textContent='حالا اسم این یکی را بگو!'}
 function nextLetter(){stopAlphabetAudio();const arr=letterMode==='fa'?letters:englishLetters;li=(li+1)%arr.length;showLetter()}
