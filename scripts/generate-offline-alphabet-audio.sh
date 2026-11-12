@@ -37,7 +37,7 @@ make_mp3() {
 # No phone speech engine, network access, or runtime download is required.
 while IFS='|' read -r number spoken; do
   [ -n "$number" ] || continue
-  make_mp3 "fa" "$spoken" "$ROOT/fa-letter-$number.mp3"
+  make_mp3 "fa" "حرفِ $spoken" "$ROOT/fa-letter-$number.mp3"
 done <<'FALETTERS'
 01|آ
 02|اَلِف
