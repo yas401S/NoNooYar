@@ -17,7 +17,7 @@ class MainActivity : Activity() {
     private var tts: TextToSpeech? = null
     private var ttsReady = false
     private var web: WebView? = null
-    private var offlineVoices = emptyList<android.speech.tts.Voice>()
+    private var availableVoices = emptyList<android.speech.tts.Voice>()
 
     private fun report(message: String) {
         runOnUiThread {
@@ -39,13 +39,22 @@ class MainActivity : Activity() {
                         return@runOnUiThread
                     }
                     val lang = if (language.startsWith("en")) Locale.US else Locale.forLanguageTag("fa-IR")
-                    val voice = offlineVoices.firstOrNull { it.locale.language == lang.language }
-                    if (voice == null) {
-                        report(if (lang.language == "fa") "صدای فارسی آفلاین نصب نیست." else "صدای انگلیسی آفلاین نصب نیست.")
-                        return@runOnUiThread
-                    }
+                    val matching = availableVoices.filter { it.locale.language == lang.language }
+                    val voice = matching.firstOrNull { !it.isNetworkConnectionRequired }
+                        ?: matching.firstOrNull()
                     engine.stop()
-                    engine.voice = voice
+                    if (voice != null) {
+                        engine.voice = voice
+                    } else {
+                        val languageResult = engine.setLanguage(lang)
+                        if (languageResult == TextToSpeech.LANG_MISSING_DATA ||
+                            languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            report(if (lang.language == "fa")
+                                "موتور گفتار گوشی صدای فارسی ندارد. باید موتور Google Speech Services و داده گفتار فارسی سازگار نصب شود."
+                            else "صدای انگلیسی در موتور گفتار گوشی موجود نیست.")
+                            return@runOnUiThread
+                        }
+                    }
                     engine.setSpeechRate(rate.coerceIn(0.5f, 1.5f))
                     engine.setPitch(pitch.coerceIn(0.5f, 1.5f))
                     val result = engine.speak(text, TextToSpeech.QUEUE_FLUSH, null, UUID.randomUUID().toString())
@@ -88,8 +97,10 @@ class MainActivity : Activity() {
                     if (status == TextToSpeech.SUCCESS) {
                         try {
                             ttsReady = true
-                            offlineVoices = tts?.voices?.filter { !it.isNetworkConnectionRequired }?.toList() ?: emptyList()
-                            report("صدای آفلاین آماده است.")
+                            availableVoices = tts?.voices?.toList() ?: emptyList()
+                            val hasPersian = availableVoices.any { it.locale.language == "fa" }
+                            report(if (hasPersian) "صدای فارسی در موتور گفتار پیدا شد." else
+                                "موتور فعلی صدای فارسی ندارد؛ موتور گفتار گوشی را به‌روزرسانی یا عوض کن.")
                         } catch (_: Exception) { report("برنامه اجراست؛ تنظیمات صدا در دسترس نیست.") }
                     } else report("برنامه اجراست؛ موتور صدای گوشی آماده نیست.")
                 }
