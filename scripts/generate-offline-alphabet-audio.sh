@@ -163,6 +163,8 @@ done <<'ENWORDS'
 26|Zebra|Zoo|Zero
 ENWORDS
 
+make_mp3 "fa" "آ مثل آسمان آبی، ا مثل انار دونه‌دونه؛ ب مثل بابای خوبم، پ مثل پروانه توی خونه؛ ت مثل توپ گرد و تند، ث مثل ثریا توی آسمون؛ ج مثل جوجه‌ی زرد، چ مثل چتر توی بارون؛ ح مثل حباب و خنده، خ مثل خرگوش بازیگوش؛ د مثل درخت سبز، ذ مثل ذرت خوشمزه؛ ر مثل رنگین‌کمان، ز مثل زنبور عسل؛ ژ مثل ژاکت گرم، س مثل سیب خوشگل؛ ش مثل شیر جنگل، ص مثل صابون و پاکی؛ ض مثل ضربان قلب، ط مثل طوطی رنگی؛ ظ مثل ظرف غذا، ع مثل عسل شیرین؛ غ مثل غنچه‌ی گل، ف مثل فیل نازنین؛ ق مثل قلم و کاغذ، ک مثل کتاب قصه؛ گ مثل گل توی باغچه، ل مثل لاله؛ م مثل ماه شب‌ها، ن مثل نان تازه؛ و مثل ورزش و شادی، ه مثل هوای تازه؛ ی مثل یاس خوش‌بو، الفبا شد تموم؛ دست بزن و شاد بخون، آفرین به تو گل من!" "$ROOT/fa-alphabet-poem.mp3"
+make_mp3 "en-us+f3" "A is for Apple, red and sweet; B is for Ball, bounce to the beat! C is for Cat and D is for Dog; E is for Elephant, big as a log. F is for Fish and G is for Goat; H is for House and I is for Ice cream! J is for Juice and K is for Kite; L is for Lion, roaring with might. M is for Moon and N is for Nest; O is for Orange, juicy and fresh! P is for Pencil and Q is for Queen; R is for Rainbow, colorful and clean. S is for Sun and T is for Tree; U is Umbrella, come sing with me! V is for Van and W is for Whale; X is Xylophone, music we hail! Y is for Yo-yo and Z is for Zebra; now we know our ABC, hooray together!" "$ROOT/en-alphabet-poem.mp3"
 cat > "$ROOT/ATTRIBUTION.txt" <<'NOTICE'
 OFFLINE ALPHABET AUDIO CREDITS
 
