@@ -95,8 +95,15 @@ button{border-radius:25px;min-height:48px;font-size:17px}
 h2{font-size:25px;color:#7436b8}
 @keyframes sparkle{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
 @media(max-width:360px){.tile{min-height:140px}.tile span{font-size:51px}.mascot{width:58px;height:58px;font-size:38px}}
+
+.music-welcome{position:relative;margin:12px auto 18px;max-width:620px;padding:14px 12px 16px;border:4px solid white;border-radius:28px;text-align:center;background:linear-gradient(135deg,#ffef71,#ff9dc8 48%,#8fe6ff);box-shadow:0 7px 0 #d98ab7,0 10px 18px #384b8b33}
+.music-stars{font-size:24px;letter-spacing:7px;animation:floaty 1.4s infinite}
+.music-title{font-size:22px;font-weight:1000;color:#7135a9;text-shadow:0 2px white;margin:5px}
+.music-sub{font-size:14px;color:#563b7a;font-weight:bold;margin:5px 0 10px}
+#musicStartBtn{background:linear-gradient(135deg,#ff4e91,#8d4be0);color:#fff;border:3px solid white;border-radius:25px;padding:12px 22px;font-size:18px;font-weight:1000;box-shadow:0 5px 0 #7132a5}
+.music-small{display:block;margin:8px auto 0;background:#fff;color:#603a91;border:2px solid #fff;border-radius:20px;padding:7px 13px;font-size:13px}
 </style></head>
-<body>
+<body>\n<div id="musicWelcome" class="music-welcome"><div class="music-stars">🎈 ⭐ 🎵 ⭐ 🎈</div><div class="music-title">جشن شادی یاسین‌لند!</div><div class="music-sub">بیا با آهنگ خودمون دست بزنیم و برقصیم</div><button id="musicStartBtn" onclick="startLandMusic()">▶️ شروع آهنگ شاد</button><button id="musicMuteBtn" onclick="toggleLandMusic()" class="music-small">🔊 خاموش کردن آهنگ</button></div>
 <header class="land-header">
   <div class="sky-decor"><span>☁️</span><span>🌈</span><span>☁️</span><span>⭐</span><span>🦋</span></div>
   <div class="brand-row"><div class="mascot">🧒🏻</div><div><h1>یاسین‌لند</h1><p>سرزمین بازی‌های جادویی!</p></div><div class="mascot">🧸</div></div>
@@ -311,7 +318,7 @@ function setupNumberTrace(){const c=$('numberTrace');if(!c||c.dataset.ready)retu
 function showNumberTrace(){const c=$('numberTrace');if(!c)return;setupNumberTrace();if(!numberTraceCtx)return;numberTraceCtx.clearRect(0,0,c.width,c.height);numberTraceCtx.save();numberTraceCtx.font='bold 145px Tahoma';numberTraceCtx.textAlign='center';numberTraceCtx.textBaseline='middle';numberTraceCtx.fillStyle='#e2d9f5';numberTraceCtx.fillText(numberLessons[numberIndex][2],c.width/2,c.height/2+4);numberTraceCtx.restore()}
 function clearNumberTrace(){showNumberTrace();$('numberTraceStatus').textContent='دوباره روی عدد بکش! ✨'}
 
-const colors=[["قرمز","Red","🔴","#e53935","سیب و گل رز قرمز هستند.","Red apples and roses are bright.","قرمز مثل یه سیبه\nمثل گلای زیباست\nبخند و رنگش کن\nچه دنیای دلگشاست!","Red like an apple bright,\nA rose that shines in light!"],["آبی","Blue","🔵","#2196f3","آسمان و دریا آبی هستند.","The sky and sea are blue.","آبی مثل دریا\nآبی مثل آسمون\nموج می‌زنه توی دلم\nچه رنگ مهربون!","Blue like the ocean,\nBlue like the sky,\nA lovely color floating by!"],["زرد","Yellow","🟡","#fdd835","خورشید و لیمو زرد هستند.","The sun and lemons are yellow.","زرد مثل خورشید\nگرم و پر از نوره\nمی‌خنده توی آسمون\nچه رنگ پرشوره!","Yellow like the sunny day,\nShining bright to light our way!"],["سبز","Green","🟢","#43a047","برگ درختان و چمن سبز هستند.","Leaves and grass are green.","سبز مثل برگ درخت\nمثل چمن توی باغ\nرنگ زندگی و بهار\nمی‌خنده توی دشت و راغ!","Green like leaves upon a tree,\nA happy color, wild and free!"],["نارنجی","Orange","🟠","#fb8c00","پرتقال و هویج نارنجی هستند.","Oranges and carrots are orange.","نارنجی مثل پرتقال\nخوشمزه و قشنگه\nرنگ شادی و خنده\nتوی باغ می‌درخشه!","Orange like a juicy treat,\nA happy color, bright and sweet!"],["بنفش","Purple","🟣","#8e44ad","بعضی گل‌ها و انگورها بنفش هستند.","Some flowers and grapes are purple.","بنفش مثل گل ناز\nمثل انگور شیرین\nچه رنگ قشنگ و نازی\nبیا با هم ببینیم!","Purple flowers, purple skies,\nA lovely color for our eyes!"],["صورتی","Pink","🩷","#ec8ab5","بعضی گل‌ها و آب‌نبات‌ها صورتی هستند.","Some flowers and candies are pink.","صورتی مثل گلبرگ\nنرم و لطیف و نازه\nرنگ خنده‌های تو\nچه دلنشین و تازه!","Pink like petals soft and sweet,\nA lovely color, such a treat!"],["قهوه‌ای","Brown","🟤","#795548","تنه درخت و بعضی خرس‌ها قهوه‌ای هستند.","Tree trunks and some bears are brown.","قهوه‌ای مثل تنه\nدرخت توی باغچه\nرنگ خاک و خرس قهوه‌ای\nچه رنگ قشنگ و با نمکه!","Brown like tree trunks strong and tall,\nA cozy color loved by all!"],["سیاه","Black","⚫","#212121","شب تاریک و بعضی گربه‌ها سیاه هستند.","The night and some cats are black.","سیاه مثل شب تاره\nپر از ستاره‌هاست\nماه توی آسمون\nکنار اون پیداست!","Black like the quiet night,\nWith stars that sparkle bright!"],["سفید","White","⚪","#eeeeee","ابرها و برف سفید هستند.","Clouds and snow are white.","سفید مثل برف پاک\nمثل ابر توی هوا\nنرم و روشن و قشنگ\nچه رنگی، چه باصفا!","White like snow so soft and bright,\nClouds that float in morning light!"],["خاکستری","Gray","🩶","#9e9e9e","بعضی ابرها و فیل‌ها خاکستری هستند.","Some clouds and elephants are gray.","خاکستری ابره\nگاهی توی آسمونه\nفیل بزرگ مهربون\nاین رنگ رو می‌دونه!","Gray like clouds up in the sky,\nElephants go walking by!"],["فیروزه‌ای","Turquoise","🩵","#26b6bd","فیروزه‌ای رنگی میان آبی و سبز است.","Turquoise is a color between blue and green.","فیروزه‌ای مثل آب\nتوی حوض کاشی‌کاری\nآبی و سبز کنار هم\nچه رنگ دوست‌داشتنی!","Turquoise, a blue-green hue,\nLike sparkling water, bright and new!"]];
+const colors=[["قرمز","Red","🔴","#e53935","سیب و گل رز قرمز هستند.","Red apples and roses are bright.","قرمز قرمز، هی هی هی!\nمثل سیبِ بهشتی! 🍎\nدست بزن و پا بکوب\nقرمزه، چه سرزنده‌ست! 💃","Red like an apple bright,\nA rose that shines in light!"],["آبی","Blue","🔵","#2196f3","آسمان و دریا آبی هستند.","The sky and sea are blue.","آبی آبی، لا لا لا!\nمثل دریا، مثل آب! 🌊\nدستاتو ببر بالا\nبپر مثل یه حباب! 🫧","Blue like the ocean,\nBlue like the sky,\nA lovely color floating by!"],["زرد","Yellow","🟡","#fdd835","خورشید و لیمو زرد هستند.","The sun and lemons are yellow.","زرد و زرد و طلایی!\nخورشید خانوم، کجایی؟ ☀️\nدور خودت بچرخ و بخند\nچه رنگِ شادی داری!","Yellow like the sunny day,\nShining bright to light our way!"],["سبز","Green","🟢","#43a047","برگ درختان و چمن سبز هستند.","Leaves and grass are green.","سبز سبز، جینگ و جینگ!\nبرگ درختا، رنگ قشنگ! 🌳\nیه قدم چپ، یه قدم راست\nباغ سبز چه باصفاست!","Green like leaves upon a tree,\nA happy color, wild and free!"],["نارنجی","Orange","🟠","#fb8c00","پرتقال و هویج نارنجی هستند.","Oranges and carrots are orange.","نارنجی، نارنجی! 🍊\nمثل هویجِ خوشمزه!\nبپر بالا، بچرخ پایین\nچه رنگِ خنده‌سازیه!","Orange like a juicy treat,\nA happy color, bright and sweet!"],["بنفش","Purple","🟣","#8e44ad","بعضی گل‌ها و انگورها بنفش هستند.","Some flowers and grapes are purple.","بنفش بنفش، وای وای وای!\nمثل انگورای بنفشِ نای! 🍇\nدست بزن، یه دور بچرخ\nبنفش شده دنیای ما!","Purple flowers, purple skies,\nA lovely color for our eyes!"],["صورتی","Pink","🩷","#ec8ab5","بعضی گل‌ها و آب‌نبات‌ها صورتی هستند.","Some flowers and candies are pink.","صورتی، صورتی! 🌸\nمثل آب‌نباتِ نباتی!\nبخند و دست بزن با من\nچه رنگِ دوست‌داشتنی!","Pink like petals soft and sweet,\nA lovely color, such a treat!"],["قهوه‌ای","Brown","🟤","#795548","تنه درخت و بعضی خرس‌ها قهوه‌ای هستند.","Tree trunks and some bears are brown.","قهوه‌ای، قهوه‌ای! 🐻\nخرس کوچولو کجایی؟\nتپ‌تپ بیا با من برقص\nتو دوستِ مهربونی!","Brown like tree trunks strong and tall,\nA cozy color loved by all!"],["سیاه","Black","⚫","#212121","شب تاریک و بعضی گربه‌ها سیاه هستند.","The night and some cats are black.","مشکی مثل شبِ ناز\nماه میاد با ساز 🌙\nچشمک بزن ستاره جون\nشب شده پر از آواز!","Black like the quiet night,\nWith stars that sparkle bright!"],["سفید","White","⚪","#eeeeee","ابرها و برف سفید هستند.","Clouds and snow are white.","سفید مثل برفِ نرم! ❄️\nدونه دونه، نرم نرم!\nدستاتو مثل برف تکون بده\nبخند و بچرخ دورِ هم!","White like snow so soft and bright,\nClouds that float in morning light!"],["خاکستری","Gray","🩶","#9e9e9e","بعضی ابرها و فیل‌ها خاکستری هستند.","Some clouds and elephants are gray.","خاکستری، فیلِ ناز! 🐘\nپا می‌کوبه با آواز!\nدُم تکون بده، گوش بجنبون\nبیا برقصیم با هم!","Gray like clouds up in the sky,\nElephants go walking by!"],["فیروزه‌ای","Turquoise","🩵","#26b6bd","فیروزه‌ای رنگی میان آبی و سبز است.","Turquoise is a color between blue and green.","فیروزه‌ای، چه نازه! 🩵\nمثل آبِ نیلگازه!\nآبی و سبز دست به دست\nیه رنگ تازه می‌سازه!","Turquoise, a blue-green hue,\nLike sparkling water, bright and new!"]];
 let ci=0,mixSide=0,mixA=0,mixB=2;
 const mixPairs={
 '0-2':[4,'قرمز + زرد = نارنجی','قرمز و زرد را قاطی کن تا نارنجی بسازی!'],
@@ -615,4 +622,46 @@ function showShapeTab(tab){['learn','game','build'].forEach(x=>{$('shape'+(x==='
 function newShapeQuestion(){shapeQuizIndex=Math.floor(Math.random()*shapeData.length);$('shapeQuestion').textContent='کدام شکل '+shapeData[shapeQuizIndex][0]+' است؟ / Find '+shapeData[shapeQuizIndex][1]+'!';$('shapeFeedback').textContent='';$('shapeChoices').innerHTML='';shapeData.slice().sort(()=>Math.random()-.5).slice(0,4).forEach(s=>{const b=document.createElement('button');b.className='option';b.textContent=s[2]+' '+s[0];b.onclick=()=>{if(s===shapeData[shapeQuizIndex]){$('shapeFeedback').textContent='آفرین! درست پیدا کردی! ⭐';$('shapeChoices').querySelectorAll('button').forEach(x=>x.disabled=true);reward()}else $('shapeFeedback').textContent='دوباره نگاه کن قهرمان کوچولو! 💪'};$('shapeChoices').append(b)})}
 function renderShapeBuild(){const x=shapeIdeas[shapeBuildIndex];$('shapeBuildEmoji').textContent=x[0];$('shapeBuildName').textContent=x[1];$('shapeBuildFact').textContent=x[2];$('shapeBuildChoices').innerHTML='';shapeData.slice(0,8).forEach(s=>{const b=document.createElement('button');b.className='option';b.textContent=s[2]+' '+s[0];b.onclick=()=>{$('shapeBuildFact').textContent='آفرین! '+s[0]+' را انتخاب کردی. '+x[2];reward()};$('shapeBuildChoices').append(b)})}
 function nextShapeBuild(){shapeBuildIndex=(shapeBuildIndex+1)%shapeIdeas.length;renderShapeBuild()}function speakShapeBuild(){stopShapeVoice();const u=new SpeechSynthesisUtterance($('shapeBuildName').textContent+'. '+$('shapeBuildFact').textContent);u.lang='fa-IR';u.rate=.82;speechSynthesis.speak(u)}
+
+/* Original offline YasinLand welcome tune: synthesized locally, no network/audio file needed */
+let landAudio=null,landMusicTimer=null,landMusicOn=false,landStep=0;
+const landMelody=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46,523.25,659.25,783.99,1046.5,880,783.99,659.25,523.25];
+function landNote(freq,duration,when,volume=.09,wave='triangle'){
+ if(!landAudio)return;
+ const o=landAudio.createOscillator(),g=landAudio.createGain();
+ o.type=wave;o.frequency.setValueAtTime(freq,when);
+ g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(volume,when+.025);g.gain.exponentialRampToValueAtTime(.0001,when+duration);
+ o.connect(g);g.connect(landAudio.destination);o.start(when);o.stop(when+duration+.03);
+}
+function landBeat(when){
+ if(!landAudio)return;
+ const o=landAudio.createOscillator(),g=landAudio.createGain();
+ o.type='sine';o.frequency.setValueAtTime(115,when);o.frequency.exponentialRampToValueAtTime(48,when+.12);
+ g.gain.setValueAtTime(.0001,when);g.gain.exponentialRampToValueAtTime(.14,when+.012);g.gain.exponentialRampToValueAtTime(.0001,when+.15);
+ o.connect(g);g.connect(landAudio.destination);o.start(when);o.stop(when+.16);
+}
+function landMusicTick(){
+ if(!landMusicOn||!landAudio)return;
+ const now=landAudio.currentTime+.02,step=landStep%landMelody.length;
+ landNote(landMelody[step],.22,now,.075,'triangle');
+ if(step%4===0)landNote(landMelody[step]*.5,.34,now,.055,'sine');
+ if(step%2===0)landBeat(now);
+ landStep++; 
+}
+function startLandMusic(){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC){document.getElementById('musicStartBtn').textContent='🎵 دستگاهت پخش آهنگ را پشتیبانی نمی‌کند';return}
+  if(!landAudio)landAudio=new AC();
+  landAudio.resume().then(()=>{
+   landMusicOn=true;landStep=0;clearInterval(landMusicTimer);landMusicTick();landMusicTimer=setInterval(landMusicTick,250);
+   document.getElementById('musicStartBtn').textContent='🎶 آهنگ شادی در حال پخش است!';
+   document.getElementById('musicMuteBtn').textContent='🔇 خاموش کردن آهنگ';
+  });
+ }catch(e){document.getElementById('musicStartBtn').textContent='برای پخش، دوباره لمس کن';}
+}
+function toggleLandMusic(){
+ if(landMusicOn){landMusicOn=false;clearInterval(landMusicTimer);if(landAudio)landAudio.suspend();document.getElementById('musicStartBtn').textContent='▶️ پخش دوباره آهنگ';document.getElementById('musicMuteBtn').textContent='🔈 آهنگ خاموش است'}
+ else startLandMusic();
+}
 </script></body></html>
