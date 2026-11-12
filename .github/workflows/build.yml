@@ -27,11 +27,13 @@ jobs:
           test -s app/src/main/assets/sounds/horse.ogg
           test -s app/src/main/assets/sounds/rooster.ogg
           test -s app/src/main/assets/sounds/bird.wav
-      - name: Generate bundled offline alphabet voices
+      - name: Generate natural offline Persian alphabet voices
         run: |
-          if ! command -v espeak-ng >/dev/null 2>&1; then sudo DEBIAN_FRONTEND=noninteractive apt-get install -y espeak-ng; fi
-          if ! command -v ffmpeg >/dev/null 2>&1; then sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg; fi
-          timeout 300 bash scripts/generate-offline-alphabet-audio.sh
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y espeak-ng ffmpeg
+          python -m pip install --upgrade pip
+          python -m pip install persian-speech==1.1.3
+          timeout 900 bash scripts/generate-offline-alphabet-audio.sh
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
