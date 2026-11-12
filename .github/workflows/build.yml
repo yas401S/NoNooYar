@@ -29,9 +29,9 @@ jobs:
           test -s app/src/main/assets/sounds/bird.wav
       - name: Generate bundled offline alphabet voices
         run: |
-          sudo apt-get update
-          sudo apt-get install -y espeak-ng ffmpeg
-          bash scripts/generate-offline-alphabet-audio.sh
+          if ! command -v espeak-ng >/dev/null 2>&1; then sudo DEBIAN_FRONTEND=noninteractive apt-get install -y espeak-ng; fi
+          if ! command -v ffmpeg >/dev/null 2>&1; then sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ffmpeg; fi
+          timeout 300 bash scripts/generate-offline-alphabet-audio.sh
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
