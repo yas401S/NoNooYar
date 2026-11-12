@@ -78,6 +78,7 @@ class MainActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
             view.settings.javaScriptEnabled = true
+            view.settings.mediaPlaybackRequiresUserGesture = false
             view.settings.domStorageEnabled = true
             view.settings.allowFileAccess = true
             view.settings.allowContentAccess = false
