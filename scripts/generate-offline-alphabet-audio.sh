@@ -108,7 +108,10 @@ ENLETTERS
 
 while IFS='|' read -r number w1 w2 w3; do
   [ -n "$number" ] || continue
-  make_mp3 "fa" "$w1، $w2، $w3" "$ROOT/fa-words-$number.mp3"
+  # One word per recording prevents rushed or blended pronunciation.
+  make_mp3 "fa" "$w1" "$ROOT/fa-word-$number-1.mp3"
+  make_mp3 "fa" "$w2" "$ROOT/fa-word-$number-2.mp3"
+  make_mp3 "fa" "$w3" "$ROOT/fa-word-$number-3.mp3"
 done <<'FAWORDS'
 01|آسمان|آهو|آتش
 02|انار|اسب|ابر
@@ -183,8 +186,8 @@ make_mp3 "en-us+f3" "A is for Apple, red and sweet; B is for Ball, bounce to the
 cat > "$ROOT/ATTRIBUTION.txt" <<'NOTICE'
 OFFLINE ALPHABET AUDIO
 
-Persian alphabet names, example words, and Persian alphabet rhyme are generated during the build with Mana-Persian-Piper through persian-speech. English alphabet audio is generated with eSpeak NG.
-Persian voice: Mana-Persian-Piper neural voice (generated with persian-speech)
+Persian alphabet names, each example word as a separate recording, and Persian alphabet rhyme are generated during the build with Mana-Persian-Piper through persian-speech. English alphabet audio is generated with eSpeak NG.
+Persian voice: Mana-Persian-Piper neural voice (generated with persian-speech); each example word is a separate clip for clear pronunciation.
 English voice: en-us+f3 (eSpeak NG)
 Project and licensing information: https://github.com/espeak-ng/espeak-ng
 
