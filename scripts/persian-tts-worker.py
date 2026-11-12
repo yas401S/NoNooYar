@@ -6,11 +6,11 @@ from persian_speech_runtime import PiperSpeechEngine
 
 engine = PiperSpeechEngine()
 for raw in sys.stdin:
-    line = raw.rstrip("\\n")
+    line = raw.rstrip("\n")
     if not line:
         continue
     try:
-        output, text = line.split("\\t", 1)
+        output, text = line.split("\t", 1)
         os.makedirs(os.path.dirname(output), exist_ok=True)
         engine.save(text, output)
         if not os.path.isfile(output) or os.path.getsize(output) == 0:
